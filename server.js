@@ -13,6 +13,8 @@ const dreams = [
   "Wash the dishes"
 ];
 
+const fs = require('fs-extra');
+
 // make all the files in 'public' available
 // https://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
@@ -30,37 +32,50 @@ app.get("/dreams", (request, response) => {
 
 const targz = require('targz');
  
-// compress files into tar.gz archive
-targz.compress({
-    src: 'path_to_files',
-    dest: 'path_to_compressed_file'
-}, function(err){
-    if(err) {
-        console.log(err);
-    } else {
-        console.log("Done!");
-    }
-});
- 
-// decompress files from tar.gz archive
-targz.decompress({
-    src: 'path_to_compressed file',
-    dest: 'path_to_extract'
-}, function(err){
-    if(err) {
-        console.log(err);
-    } else {
-        console.log("Done!");
-    }
-});
-
 // https://stackoverflow.com/questions/41941724/nodejs-sendfile-with-file-name-in-download
 // send the .unitypackage back
 app.get("/package", (request, response) => {
+  
+  let file = __dirname + "/DO-NOT-TOUCH/" + "archtemp.tar.gz";
+  let tmpPath = '/tmp/my_package_folder';
+  let tmpFile = '/tmp/my_package_file.tar.gz';
+  
+  fs.ensureFile(tmpPath);
+                
+  // decompress files from tar.gz archive
+  targz.decompress({
+      src: file,
+      dest: tmpPath
+  }, function(err){
+      if(err) {
+          console.log(err);
+      } else {
+          console.log("Done decompressing!");
+      }
+  });
+  
+  fs.ensureFile(tmpFile, err => {
+    console.log("Error in ensure file " + tmpFile + ": " + err) // => null
+    // file has now been created, including the directory it is to be placed in
+  });
+  
+  // compress files into tar.gz archive
+  targz.compress({
+      src: tmpPath,
+      dest: tmpFile
+  }, function(err){
+      if(err) {
+          console.log(err);
+      } else {
+          console.log("Done compressing!");
+      }
+  });
+  
+  
   // express helps us take JS objects and send them as JSON
   // response.sendFile('archtemp.unitypackage', { root: __dirname });
-  response.download(__dirname + "/" + "archtemp.unitypackage", "my_package.unitypackage");
-  r
+  response.download(tmpFile, "my_package.unitypackage");
+  
   // response.sendFile("https://cdn.glitch.com/ea155149-e3d1-4828-bc6a-2e46ba8cf214%2Farchtemp.unitypackage?v=1597175110752");
 });
 
