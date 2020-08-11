@@ -34,30 +34,39 @@ const targz = require('targz');
  
 // https://stackoverflow.com/questions/41941724/nodejs-sendfile-with-file-name-in-download
 // send the .unitypackage back
-app.get("/package", (request, response) => {
+app.get("/package", async (request, response, next) => {
   
   let file = __dirname + "/DO-NOT-TOUCH/" + "archtemp.tar.gz";
   let tmpPath = '/tmp/my_package_folder';
   let tmpFile = '/tmp/my_package_file.tar.gz';
   
-  fs.ensureFile(tmpPath);
+  fs.ensureDir(tmpPath);
                 
+  // https://stackoverflow.com/a/56119188
   // decompress files from tar.gz archive
-  targz.decompress({
+  function decompressPromise = new Promise((resolve, reject) => {
+    targz.decompress({
       src: file,
       dest: tmpPath
-  }, function(err){
-      if(err) {
-          console.log(err);
-      } else {
-          console.log("Done decompressing!");
-      }
-  });
+    }, function(err){
+        if(err) {
+            console.log(err);
+            reject(err);
+        } else {
+            console.log("Done decompressing!");
+            resolve(tmpPath);
+        }
+    })
+  });;
+  
+  let targetPath = await decompressPromise();
   
   fs.ensureFile(tmpFile, err => {
     console.log("Error in ensure file " + tmpFile + ": " + err) // => null
     // file has now been created, including the directory it is to be placed in
   });
+  
+  console.log("after decompress before compress");
   
   // compress files into tar.gz archive
   targz.compress({
@@ -71,6 +80,7 @@ app.get("/package", (request, response) => {
       }
   });
   
+  console.log("after compress before decompress");
   
   // express helps us take JS objects and send them as JSON
   // response.sendFile('archtemp.unitypackage', { root: __dirname });
