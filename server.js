@@ -71,24 +71,47 @@ app.get("/package", async (request, response, next) => {
   // GUID of PackageData.asset:
   let dataGuid = "54e893365203989479ba056e0bf3174a";
   let metaFile = tmpPath + "/" + dataGuid + "/" + "asset";
-  yaml.customTags = ["unity3d.com,2011"];
   var data = fs.readFileSync(metaFile, 'utf8');
-  console.log(data.toString()); 
+  //console.log(data.toString()); 
   
   const splitLines = str => str.split(/\r?\n/);
   let split_lines = splitLines(data);
-  console.log(split_lines);
+  
+  let some_lines = split_lines.slice(3);
+  //console.log(some_lines);
+  
+  let full_lines = split_lines.slice(0, 3);
   
   
-  console.log(split_lines.join("\n"));
+  let yamlData = yaml.load(some_lines.join("\n"));
+  
+  
+  yamlData["MonoBehaviour"]["registries"] = [{
+    name: "pfc",
+    url: "https://prefrontalcortex.de",
+    scope: [
+      "com.pfc"
+    ]
+  }];
+  yamlData["MonoBehaviour"]["packages"] = [{
+    name: "com.pfc.dialoguesystem",
+    version: "1.0.0",
+    installType: 1
+  }];
+  
+  // full_lines = full_lines.concat(some_lines);
+  
+  let joinedStart = full_lines.join("\n");
+  console.log(joinedStart);
+  
+  //console.log(split_lines.join("\n"));
   // modify; this is regular yaml
   /*
   let data = {
     ""
   };
   */
-  let dump = yaml.dump(data);
-  console.log(dump);
+  let dump = joinedStart + "\n" + yaml.dump(yamlData);
   
   fs.writeFileSync(metaFile, dump, 'utf8')
   
