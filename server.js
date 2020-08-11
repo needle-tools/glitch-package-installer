@@ -15,6 +15,8 @@ const dreams = [
 
 const fs = require('fs-extra');
 
+const yaml = require('js-yaml');
+
 // make all the files in 'public' available
 // https://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
@@ -69,14 +71,26 @@ app.get("/package", async (request, response, next) => {
   // GUID of PackageData.asset:
   let dataGuid = "54e893365203989479ba056e0bf3174a";
   let metaFile = tmpPath + "/" + dataGuid + "/" + "asset";
-    
+  yaml.customTags = ["unity3d.com,2011"];
   var data = fs.readFileSync(metaFile, 'utf8');
   console.log(data.toString()); 
   
+  const splitLines = str => str.split(/\r?\n/);
+  let split_lines = splitLines(data);
+  console.log(split_lines);
+  
+  
+  console.log(split_lines.join("\n"));
   // modify; this is regular yaml
+  /*
+  let data = {
+    ""
+  };
+  */
+  let dump = yaml.dump(data);
+  console.log(dump);
   
-  
-  fs.writeFileSync(metaFile, data, 'utf8')
+  fs.writeFileSync(metaFile, dump, 'utf8')
   
   /// END MODIFY PACKAGE CONTENT  
   
