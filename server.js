@@ -57,20 +57,23 @@ function compressPromise(tmpPath, tmpFile) {
     });
   }
   
-// http://package-installer.glitch.me/package/com.pfc/com.pfc.dialoguesystem/1.0.0?registry=https://packages.needle.tools
+// http://package-installer.glitch.me/package/needle/com.needle.compilation-visualizer/1.0.0?registry=https://packages.needle.tools&scope=com.needle
+// http://package-installer.glitch.me/package/OpenUPM/elzach.leveleditor/0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor
 
 // https://stackoverflow.com/questions/41941724/nodejs-sendfile-with-file-name-in-download
 // send the .unitypackage back
 // https://techeplanet.com/express-path-parameter/
-app.get("/package/:scope/:name/:version", async (request, response, next) => {
+app.get("/package/:registry/:name/:version", async (request, response, next) => {
 
   console.log(request.params.scope + " - " + request.params.name + " - " + request.params.version);
   console.log(request.query.registry);
   
   let registryName = request.params.registry;
-  let registryScope = request.query.scope;
   let packageName = request.params.name;
   let packageVersion = request.params.version;
+  
+  let registryScope = request.query.scope;
+  let registryUrl = request.query.registry;
   
   let file = __dirname + "/DO-NOT-TOUCH/" + "archtemp.tar.gz";
   let tmpPath = '/tmp/my_package_folder';
@@ -111,7 +114,7 @@ app.get("/package/:scope/:name/:version", async (request, response, next) => {
   
   yamlData["MonoBehaviour"]["registries"] = [{
     name: registryName,
-    url: registryName,
+    url: registryUrl,
     scope: [
       registryScope
     ]
@@ -129,7 +132,7 @@ app.get("/package/:scope/:name/:version", async (request, response, next) => {
   /// END MODIFY PACKAGE CONTENT  
   
   let compressPath = await compressPromise(tmpPath, tmpFile);  
-  response.download(compressPath, "my_package.unitypackage");
+  response.download(compressPath, "Install-" + packageName + "-" + packageVersion + ".unitypackage");
 });
 
 // listen for requests :)
