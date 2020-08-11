@@ -59,7 +59,8 @@ targz.decompress({
 app.get("/package", (request, response) => {
   // express helps us take JS objects and send them as JSON
   // response.sendFile('archtemp.unitypackage', { root: __dirname });
-  response.download(__dirname + "/" + "archtemp.unitypackage", "my_package.unitypackage");
+  // response.download(__dirname + "/" + "archtemp.unitypackage", "my_package.unitypackage");
+  response.download("https://cdn.glitch.com/ea155149-e3d1-4828-bc6a-2e46ba8cf214%2Farchtemp.unitypackage?v=1597175110752", "my_package.unitypackage");
   
   // response.sendFile("https://cdn.glitch.com/ea155149-e3d1-4828-bc6a-2e46ba8cf214%2Farchtemp.unitypackage?v=1597175110752");
 });
