@@ -57,9 +57,22 @@ targz.decompress({
 // https://stackoverflow.com/questions/41941724/nodejs-sendfile-with-file-name-in-download
 // send the .unitypackage back
 app.get("/package", (request, response) => {
+  
+  targz.decompress({
+      src: __dirname + "/archtemp.tar.gz",
+      dest: '/temp'
+  }, function(err){
+      if(err) {
+          console.log(err);
+      } else {
+          console.log("Done!");
+      }
+  });
+
+  
   // express helps us take JS objects and send them as JSON
   // response.sendFile('archtemp.unitypackage', { root: __dirname });
-  response.download(__dirname + "/" + "archtemp.unitypackage", "my_package.unitypackage");
+  response.download(__dirname + "/" + "archtemp.tar.gz", "my_package.unitypackage");
   
   // response.sendFile("https://cdn.glitch.com/ea155149-e3d1-4828-bc6a-2e46ba8cf214%2Farchtemp.unitypackage?v=1597175110752");
 });
