@@ -44,7 +44,8 @@ app.get("/package", async (request, response, next) => {
                 
   // https://stackoverflow.com/a/56119188
   // decompress files from tar.gz archive
-  function decompressPromise = new Promise((resolve, reject) => {
+  function decompressPromise() {
+    return new Promise((resolve, reject) => {
     targz.decompress({
       src: file,
       dest: tmpPath
@@ -57,28 +58,49 @@ app.get("/package", async (request, response, next) => {
             resolve(tmpPath);
         }
     })
-  });;
+  })};
   
   let targetPath = await decompressPromise();
-  
-  fs.ensureFile(tmpFile, err => {
-    console.log("Error in ensure file " + tmpFile + ": " + err) // => null
-    // file has now been created, including the directory it is to be placed in
-  });
-  
+    
   console.log("after decompress before compress");
   
-  // compress files into tar.gz archive
-  targz.compress({
-      src: tmpPath,
-      dest: tmpFile
-  }, function(err){
-      if(err) {
-          console.log(err);
-      } else {
-          console.log("Done compressing!");
-      }
-  });
+  /// MODIFY PACKAGE CONTENT
+  
+  // GUID of PackageData.asset:
+  let dataGuid = "54e893365203989479ba056e0bf3174a";
+  let metaFile = tmpPath + "/" + dataGuid + "/" + "asset";
+    
+  var data = fs.readFileSync(metaFile, 'utf8');
+  console.log(data.toString()); 
+  
+  // modify; this is regular yaml
+  
+  
+  fs.writeFileSync(metaFile, data, 'utf8')
+  
+  /// END MODIFY PACKAGE CONTENT  
+  
+  function compressPromise() {
+    return new Promise((resolve, reject) => {
+      // compress files into tar.gz archive
+        targz.compress({
+            src: tmpPath,
+            dest: tmpFile
+        }, function(err){
+            if(err) {
+              reject(err);
+                console.log(err);
+            } else {
+                resolve(tmpFile);
+                console.log("Done compressing!");
+            }
+        });
+    });
+  }
+  
+  let compressPath = await compressPromise();
+  
+  console.log(targetPath + " ==> " + compressPath);
   
   console.log("after compress before decompress");
   
