@@ -11,6 +11,7 @@ const semver = require('semver');
 const rimraf = require("rimraf");
 const nanoid = require('nanoid');
 const got = require('got');
+const fetch = require('node-fetch');
 
 const app = express(); 
 
@@ -140,18 +141,24 @@ function splitNameAndVersion(nameAndVersion) {
     if(!semver.valid(version))
       return false;
   
-  if(version = "")
+  if(version == "")
     version = "latest";
   
   return { name: name, version: version };
 }
   
+// https://dev.to/isalevine/three-ways-to-retrieve-json-from-the-web-using-node-js-3c88
 function checkPackageExistance(url) {
-  got(url, { json: true }).then(response => {
-    console.log(response.body.url);
-    console.log(response.body.explanation);
-  }).catch(error => {
-    console.log(error.response.body);
+  console.log("checking existance of " + url);
+  return fetch(url, { method: "Get" })
+  .then(response => response.json())
+  .then(json => {
+    console.log(json);
+    return json;
+  })
+  .catch(error => {
+    console.log(error);
+    return error;
   });
 }
 
@@ -181,7 +188,8 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   let registryUrl = request.query.registry;
   
   // try to download package details from registry; check if the package even exists before creating an installer for it.
-  checkPackageExistance(registryUrl + "/" + packageName + "/" + packageVersion);
+  let result = await checkPackageExistance(registryUrl + "/" + packageName + "/" + packageVersion);
+  console.log("version check result: " + result);
   
   // input file - this needs to be updated via Git import
   // so that it lives directly next to the files here.

@@ -4,6 +4,7 @@ dependencies:
   got: 11.5.2
   js-yaml: 3.14.0
   nanoid: 3.1.12
+  node-fetch: 2.6.0
   rimraf: 3.0.2
   semver: 7.3.2
   targz: 1.0.1
@@ -569,6 +570,12 @@ packages:
       node: '>= 0.6'
     resolution:
       integrity: sha512-hZXc7K2e+PgeI1eDBe/10Ard4ekbfrrqG8Ep+8Jmf4JID2bNg7NvCPOZN+kfF574pFQI7mum2AUqDidoKqcTOw==
+  /node-fetch/2.6.0:
+    dev: false
+    engines:
+      node: 4.x || >=6.0.0
+    resolution:
+      integrity: sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
   /normalize-url/4.5.0:
     dev: false
     engines:
@@ -861,6 +868,7 @@ specifiers:
   got: ^11.5.1
   js-yaml: ^3.14.0
   nanoid: ^3.1.12
+  node-fetch: ^2.6.0
   rimraf: ^3.0.2
   semver: ^7.3.2
   targz: ^1.0.1
