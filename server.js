@@ -57,13 +57,17 @@ function compressPromise(tmpPath, tmpFile) {
     });
   }
   
-// http://package-installer.glitch.me/package/needle/com.needle.compilation-visualizer/1.0.0?registry=https://packages.needle.tools&scope=com.needle
-// http://package-installer.glitch.me/package/OpenUPM/elzach.leveleditor/0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor
+app.get("/test/:registry/:name/:version", async (request, response, next) => {
+  response.json(request.query);
+});
+
+// http://package-installer.glitch.me/v1/install/needle/com.needle.compilation-visualizer/1.0.0?registry=https://packages.needle.tools&scope=com.needle
+// http://package-installer.glitch.me/v1/install/OpenUPM/elzach.leveleditor/0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor&scope=elzach.extensions
 
 // https://stackoverflow.com/questions/41941724/nodejs-sendfile-with-file-name-in-download
 // send the .unitypackage back
 // https://techeplanet.com/express-path-parameter/
-app.get("/package/:registry/:name/:version", async (request, response, next) => {
+app.get("/v1/install/:registry/:name@:version", async (request, response, next) => {
 
   console.log(request.params.scope + " - " + request.params.name + " - " + request.params.version);
   console.log(request.query.registry);
@@ -114,11 +118,9 @@ app.get("/package/:registry/:name/:version", async (request, response, next) => 
   
   yamlData["MonoBehaviour"]["registries"] = [{
     name: registryName,
-    url: registryUrl,
-    scope: [
-      registryScope
-    ]
+    url: registryUrl
   }];
+  yamlData["MonoBehaviour"]["registries"].scope = Array.isArray(registryScope) ? registryScope : [ registryScope ];
   yamlData["MonoBehaviour"]["packages"] = [{
     name: packageName,
     version: packageVersion,
