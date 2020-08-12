@@ -103,7 +103,7 @@ app.get("/v1/install/:registry/:name/:version", async (request, response, next) 
   let packageName = request.params.name;
   let packageVersion = request.params.version;
   
-  let registryScope = request.query.scope;
+  let registryScope = request.query.scope;    
   let registryUrl = request.query.registry;
   
   let file = __dirname + "/DO-NOT-TOUCH/" + "archtemp.tar.gz";
@@ -116,21 +116,35 @@ app.get("/v1/install/:registry/:name/:version", async (request, response, next) 
   
   /// MODIFY PACKAGE CONTENT
   
+  // remove directories we don't need right now,
+  // e.g. everything related to credentials handling.
+  let credentialsFiles = ["52218f1b260be3045a4293f1ebc40b18", "d7a51e69373973d458e0da95b391295f", "d7dd0223250a92244a276c6129a21f40", "d9a1dbfef6b8e6645b0358fd82179d8a"];
+  for(let d in credentialsFiles) {
+    fs.rmdirSync(credentialsFiles[d], { recursive: true });
+  }
+  
   // Modify all paths to make this a unique installer
   // get all directories
   let dirs = getDirectories(tmpPath);
   console.log(dirs);
   
+  let newPackageName = "Packages/installer." + packageName + "/";
+  
   // in each directory
   for(var d in dirs) {
     let dir = dirs[d];
+    let pathnamePath = tmpPath + "/" + dir + "/pathname";
     // - open the single line in the file "path"
-    let pathData = fs.readFileSync(assetFile, 'utf8');
+    let pathData = fs.readFileSync(pathnamePath, 'utf8');
+    console.log("in dir: " + dirs[d] + ": " + pathData);
     // - change the path prefix to a common one for this installer
+    pathData.replace("Packages/com.needle.auto-installer/Editor/", newPackageName);
+    pathData.replace("Packages/com.needle.auto-installer/package.json", newPackageName + "package.json");
     // - write the "path" file again
+    fs.writeFileSync(pathnamePath, pathData, 'utf8');
   }
   
-  return;
+  // return;
   
   // Modify PackageData.asset:
   let dataGuid = "54e893365203989479ba056e0bf3174a";
