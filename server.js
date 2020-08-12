@@ -7,6 +7,7 @@ const express = require("express");
 const fs = require('fs-extra');
 const yaml = require('js-yaml');
 const targz = require('targz');
+const semver = require('semver');
 
 const app = express();
 
@@ -57,8 +58,30 @@ function compressPromise(tmpPath, tmpFile) {
     });
   }
   
-app.get("/test/:registry/:name/:version", async (request, response, next) => {
-  response.json(request.query);
+app.get("/test/:registry/:nameAtVersion", async (request, response, next) => {
+  let packages = [];
+  
+  // response.json(request.query);
+  let parts0 = request.params.nameAtVersion.split(',');
+  for(let key in parts0) {
+    console.log(key + ", " + parts0[key]);
+    
+    let parts = parts0[key].split('@');
+    if(parts.length != 2) 
+      response.status(500).send({ error: 'Please use the format com.my.package@1.0.0 with a valid semver.' });
+    let name = parts[0];
+    let version = parts[1];
+    if(!semver.valid(version))
+      response.status(500).send({ error: 'Incorrect version - not valid SemVer' });
+
+    packages.push({
+      name: name,
+      version: version,
+      installType: 1
+    });
+  }
+    
+  response.json(packages);  
 });
 
 // http://package-installer.glitch.me/v1/install/needle/com.needle.compilation-visualizer/1.0.0?registry=https://packages.needle.tools&scope=com.needle
@@ -67,7 +90,7 @@ app.get("/test/:registry/:name/:version", async (request, response, next) => {
 // https://stackoverflow.com/questions/41941724/nodejs-sendfile-with-file-name-in-download
 // send the .unitypackage back
 // https://techeplanet.com/express-path-parameter/
-app.get("/v1/install/:registry/:name@:version", async (request, response, next) => {
+app.get("/v1/install/:registry/:name/:version", async (request, response, next) => {
 
   console.log(request.params.scope + " - " + request.params.name + " - " + request.params.version);
   console.log(request.query.registry);
