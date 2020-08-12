@@ -88,6 +88,42 @@ app.get("/test/:registry/:nameAtVersion", async (request, response, next) => {
   response.json(packages);  
 });
 
+function removeCredentialsTools(tmpPath) {
+  // remove directories we don't need right now,
+  // e.g. everything related to credentials handling.
+  let credentialsFiles = ["52218f1b260be3045a4293f1ebc40b18", "d7a51e69373973d458e0da95b391295f", "d7dd0223250a92244a276c6129a21f40", "d9a1dbfef6b8e6645b0358fd82179d8a"];
+  for(let d in credentialsFiles) {
+    let dirName = tmpPath + "/" + credentialsFiles[d];
+    if(fs.existsSync(dirName))
+      // fs.rmdirSync(dirName, { recursive: true });
+      rimraf.sync(dirName);
+    else
+      console.log("directory does not exist, can't remove: " + dirName);
+  }
+}
+
+function modifyPackagePath(tmpPath, packageName) {
+  // Modify all paths to make this a unique installer
+  // get all directories
+  let dirs = getDirectories(tmpPath);
+  console.log(dirs);
+  
+  let newPackageName = "Packages/installer." + packageName + "/";
+  
+  // in each directory
+  for(var d in dirs) {
+    let dir = dirs[d];
+    let pathnamePath = tmpPath + "/" + dir + "/pathname";
+    // - open the single line in the file "path"
+    let pathData = fs.readFileSync(pathnamePath, 'utf8');
+    console.log("in dir: " + dirs[d] + ": " + pathData);
+    // - change the path prefix to a common one for this installer
+    pathData = pathData.replace("Packages/com.needle.auto-installer/Editor/", newPackageName);
+    pathData = pathData.replace("Packages/com.needle.auto-installer/package.json", newPackageName + "package.json");
+    // - write the "path" file again
+    fs.writeFileSync(pathnamePath, pathData, 'utf8');
+  }
+}
 
 // http://package-installer.glitch.me/v1/install/needle/com.needle.compilation-visualizer/1.0.0?registry=https://packages.needle.tools&scope=com.needle
 // http://package-installer.glitch.me/v1/install/OpenUPM/elzach.leveleditor/0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor&scope=elzach.extensions
@@ -119,40 +155,8 @@ app.get("/v1/install/:registry/:name/:version", async (request, response, next) 
   
   /// MODIFY PACKAGE CONTENT
   
-  // remove directories we don't need right now,
-  // e.g. everything related to credentials handling.
-  let credentialsFiles = ["52218f1b260be3045a4293f1ebc40b18", "d7a51e69373973d458e0da95b391295f", "d7dd0223250a92244a276c6129a21f40", "d9a1dbfef6b8e6645b0358fd82179d8a"];
-  for(let d in credentialsFiles) {
-    let dirName = tmpPath + "/" + credentialsFiles[d];
-    if(fs.existsSync(dirName))
-      // fs.rmdirSync(dirName, { recursive: true });
-      rimraf.sync(dirName);
-    else
-      console.log("directory does not exist, can't remove: " + dirName);
-  }
-  
-  // Modify all paths to make this a unique installer
-  // get all directories
-  let dirs = getDirectories(tmpPath);
-  console.log(dirs);
-  
-  let newPackageName = "Packages/installer." + packageName + "/";
-  
-  // in each directory
-  for(var d in dirs) {
-    let dir = dirs[d];
-    let pathnamePath = tmpPath + "/" + dir + "/pathname";
-    // - open the single line in the file "path"
-    let pathData = fs.readFileSync(pathnamePath, 'utf8');
-    console.log("in dir: " + dirs[d] + ": " + pathData);
-    // - change the path prefix to a common one for this installer
-    pathData.replace("Packages/com.needle.auto-installer/Editor/", newPackageName);
-    pathData.replace("Packages/com.needle.auto-installer/package.json", newPackageName + "package.json");
-    // - write the "path" file again
-    fs.writeFileSync(pathnamePath, pathData, 'utf8');
-  }
-  
-  // return;
+  removeCredentialsTools(tmpPath);  
+  modifyPackagePath(tmpPath, packageName);
   
   // Modify PackageData.asset:
   let dataGuid = "54e893365203989479ba056e0bf3174a";
