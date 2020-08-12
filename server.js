@@ -21,6 +21,11 @@ app.get("/", (request, response) => {
 });
  
 
+function getDirectories(path) {
+  return fs.readdirSync(path).filter(function (file) {
+    return fs.statSync(path+'/'+file).isDirectory();
+  });
+}
             
 // https://stackoverflow.com/a/56119188
 // decompress files from tar.gz archive
@@ -34,7 +39,7 @@ function decompressPromise(file, tmpPath) {
           console.log(err);
           reject(err);
       } else {
-          console.log("Done decompressing!");
+          // console.log("Done decompressing!");
           resolve(tmpPath);
       }
   })
@@ -51,8 +56,8 @@ function compressPromise(tmpPath, tmpFile) {
               reject(err);
                 console.log(err);
             } else {
+                // console.log("Done compressing!");
                 resolve(tmpFile);
-                console.log("Done compressing!");
             }
         });
     });
@@ -81,6 +86,7 @@ app.get("/test/:registry/:nameAtVersion", async (request, response, next) => {
   
   response.json(packages);  
 });
+
 
 // http://package-installer.glitch.me/v1/install/needle/com.needle.compilation-visualizer/1.0.0?registry=https://packages.needle.tools&scope=com.needle
 // http://package-installer.glitch.me/v1/install/OpenUPM/elzach.leveleditor/0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor&scope=elzach.extensions
@@ -111,7 +117,20 @@ app.get("/v1/install/:registry/:name/:version", async (request, response, next) 
   /// MODIFY PACKAGE CONTENT
   
   // Modify all paths to make this a unique installer
+  // get all directories
+  let dirs = getDirectories(tmpPath);
+  console.log(dirs);
   
+  // in each directory
+  for(var d in dirs) {
+    let dir = dirs[d];
+    // - open the single line in the file "path"
+    let pathData = fs.readFileSync(assetFile, 'utf8');
+    // - change the path prefix to a common one for this installer
+    // - write the "path" file again
+  }
+  
+  return;
   
   // Modify PackageData.asset:
   let dataGuid = "54e893365203989479ba056e0bf3174a";
