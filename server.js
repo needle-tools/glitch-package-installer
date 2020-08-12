@@ -64,6 +64,10 @@ function compressPromise(tmpPath, tmpFile) {
         });
     });
   }
+
+function splitNameAndVersion(nameAndVersion) {
+  let parts = nameAndVersion.split('@');
+}
   
 app.get("/test/:registry/:nameAtVersion", async (request, response, next) => {
   let packages = [];
