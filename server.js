@@ -10,7 +10,6 @@ const targz = require('targz');
 const semver = require('semver');
 const rimraf = require("rimraf");
 const nanoid = require('nanoid');
-const got = require('got');
 const fetch = require('node-fetch');
 
 const app = express(); 
@@ -182,35 +181,46 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   let packageName = nameVersion.name;
   let packageVersion = nameVersion.version;
   
+  let registryUrl = request.query.registry;
+  
+  // try to download package details from registry; check if the package even exists before creating an installer for it.
+  let existanceResult = await checkPackageExistance(registryUrl + "/" + packageName + "/" + packageVersion);
+  console.log("version check result: " + existanceResult);
+  
+  if(typeof existanceResult.error !== 'undefined') {
+    // TODO we probably want to allow creating installers for packages that need auth.
+    // Someone using the installer might have auth in place.
+    
+    // console.log("BAD BAD ERROR " + existanceResult.error);
+    response.status(500).send({ error: existanceResult.error });
+    return;
+  }
+  
+  // if we got here, the package exists, is accessible, and ready to be downloaded
+  // let's use the correct latest version if none was specified
+  console.log("Package has version online: " + existanceResult.version);
+  if(!semver.valid(packageVersion) && semver.valid(existanceResult.version))
+    packageVersion = existanceResult.version;
+  
+  
   let registryScope = request.query.scope;
   if(!Array.isArray(registryScope)) registryScope = [ registryScope ];
   
   // if scope is not defined we fall back to package name as scope.
   // TODO could add a better heuristic here to walk the scope, avoid collisions with unity scopes, and use that instead
   // as it would result in dependencies (probably) working.
-  if(typeof registryScope === 'undefined' || registryScope == "")
-    registryScope = packageName;
-  
-  let registryUrl = request.query.registry;
-  
-  // try to download package details from registry; check if the package even exists before creating an installer for it.
-  let result = await checkPackageExistance(registryUrl + "/" + packageName + "/" + packageVersion);
-  console.log("version check result: " + result);
-  
-  if(typeof result.error !== 'undefined') {
-    // TODO we probably want to allow creating installers for packages that need auth.
-    // Someone using the installer might have auth in place.
-    
-    // console.log("BAD BAD ERROR " + result.error);
-    response.status(500).send({ error: result.error });
-    return;
+  if(typeof registryScope === 'undefined' || registryScope == "") {
+    registryScope = [ packageName ];
+    if(typeof existanceResult.dependencies !== 'undefined') {
+      // filter out only the ones that are NOT from unity
+      console.log(existanceResult.dependencies);
+      for(var dep in existanceResult.dependencies) {
+        if(!dep.startsWith("com.unity"))
+          registryScope.push(dep);
+      }
+    }
+    console.log("used fallback scope: " + registryScope)
   }
-  
-  // if we got here, the package exists, is accessible, and ready to be downloaded
-  // let's use the correct latest version if none was specified
-  console.log("Package has version online: " + result.version);
-  if(!semver.valid(packageVersion) && semver.valid(result.version))
-    packageVersion = result.version;
   
   // input file - this needs to be updated via Git import
   // so that it lives directly next to the files here.
