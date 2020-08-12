@@ -2,6 +2,7 @@ dependencies:
   express: 4.17.1
   fs-extra: 9.0.1
   js-yaml: 3.14.0
+  nanoid: 3.1.12
   rimraf: 3.0.2
   semver: 7.3.2
   targz: 1.0.1
@@ -404,6 +405,13 @@ packages:
     dev: false
     resolution:
       integrity: sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
+  /nanoid/3.1.12:
+    dev: false
+    engines:
+      node: ^10 || ^12 || >=13.7
+    hasBin: true
+    resolution:
+      integrity: sha512-1qstj9z5+x491jfiC4Nelk+f8XBad7LN20PmyWINJEMRSf3wcAjAWysw1qaA8z6NSKe2sjq1hRSDpBH5paCb6A==
   /negotiator/0.6.2:
     dev: false
     engines:
@@ -665,6 +673,7 @@ specifiers:
   express: ^4.17.1
   fs-extra: ^9.0.1
   js-yaml: ^3.14.0
+  nanoid: ^3.1.12
   rimraf: ^3.0.2
   semver: ^7.3.2
   targz: ^1.0.1

@@ -10,6 +10,8 @@ const targz = require('targz');
 const semver = require('semver');
 const rimraf = require("rimraf");
 
+const nanoid = require('nanoid');
+
 const app = express(); 
 
 // make all the files in 'public' available
@@ -130,7 +132,7 @@ function modifyPackagePath(tmpPath, packageName) {
 // https://stackoverflow.com/questions/41941724/nodejs-sendfile-with-file-name-in-download
 // send the .unitypackage back
 // https://techeplanet.com/express-path-parameter/
-app.get("/v1/install/:registry/:name/:version", async (request, response, next) => {
+app.get("/v1/installer/:registry/:name/:version", async (request, response, next) => {
 
   console.log(request.query.scope + " - " + request.params.name + " - " + request.params.version);
   console.log(request.query.registry);
@@ -144,9 +146,15 @@ app.get("/v1/install/:registry/:name/:version", async (request, response, next) 
   
   let registryUrl = request.query.registry;
   
+  // input file - this needs to be updated via Git import
+  // so that it lives directly next to the files here.
+  // CAREFUL - selecting the file in the glitch UI will weirdly convert it to some text format?! DO NOT TOUCH this file through the Glitch UI
   let file = __dirname + "/DO-NOT-TOUCH/" + "archtemp.tar.gz";
-  let tmpPath = '/tmp/my_package_folder';
-  let tmpFile = '/tmp/my_package_file.tar.gz';
+  
+  // generate temporary paths to unpack/pack the 
+  let salt = nanoid.nanoid() + "_" + Date.now();
+  let tmpPath = '/tmp/my_package_folder_' + salt;
+  let tmpFile = '/tmp/my_package_file_' + salt + '.tar.gz';
   
   fs.ensureDir(tmpPath);
     
