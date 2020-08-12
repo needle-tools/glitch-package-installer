@@ -110,7 +110,10 @@ app.get("/v1/install/:registry/:name/:version", async (request, response, next) 
   
   /// MODIFY PACKAGE CONTENT
   
-  // GUID of PackageData.asset:
+  // Modify all paths to make this a unique installer
+  
+  
+  // Modify PackageData.asset:
   let dataGuid = "54e893365203989479ba056e0bf3174a";
   let assetFile = tmpPath + "/" + dataGuid + "/" + "asset";
   var data = fs.readFileSync(assetFile, 'utf8');
