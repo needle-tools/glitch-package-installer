@@ -12,7 +12,7 @@ Minimalistic docs / API base / tests:
 <b>[package-installer.glitch.me](https://package-installer.glitch.me/)</b>
 
 Report bugs, please: 
-
+[GitHub Issues](https://github.com/needle-tools/glitch-package-installer/issues)
 
 ## Made by [🌵 Needle](https://needle.tools/)
 
