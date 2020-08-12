@@ -67,6 +67,20 @@ function compressPromise(tmpPath, tmpFile) {
 
 function splitNameAndVersion(nameAndVersion) {
   let parts = nameAndVersion.split('@');
+  if(parts.length < 1 || parts.length > 2)
+    return false;
+  
+  let name = parts[0];
+  let version = parts.length == 2 ? parts[1] : "";
+  
+  if(version === "latest")
+    version = "";
+  
+  if(version != null && version != "")
+    if(!semver.valid(version))
+      return false;
+  
+  return { name: name, version: version };
 }
   
 app.get("/test/:registry/:nameAtVersion", async (request, response, next) => {
@@ -75,22 +89,21 @@ app.get("/test/:registry/:nameAtVersion", async (request, response, next) => {
   // response.json(request.query);
   let parts0 = request.params.nameAtVersion.split(',');
   for(let key in parts0) {
-    let parts = parts0[key].split('@');
-    if(parts.length != 2) 
+    let tuple = splitNameAndVersion(parts0[key]);
+    
+    if(!tuple) {
       response.status(500).send({ error: 'Please use the format com.my.package@1.0.0 with a valid semver.' });
-    let name = parts[0];
-    let version = parts[1];
-    if(!semver.valid(version))
-      response.status(500).send({ error: 'Incorrect version - not valid SemVer' });
-
+      return;
+    }
+    
     packages.push({
-      name: name,
-      version: version,
+      name: tuple.name,
+      version: tuple.version,
       installType: 1
     });
   }
   
-  response.json(packages);  
+  response.json(packages);
 });
 
 function removeCredentialsTools(tmpPath) {
@@ -135,12 +148,15 @@ function modifyPackagePath(tmpPath, packageName) {
 // https://stackoverflow.com/questions/41941724/nodejs-sendfile-with-file-name-in-download
 // send the .unitypackage back
 // https://techeplanet.com/express-path-parameter/
-app.get("/v1/installer/:registry/:name/:version", async (request, response, next) => {
+app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next) => {
 
   console.log(request.query.scope + " - " + request.params.name + " - " + request.params.version);
   console.log(request.query.registry);
   
   let registryName = request.params.registry;
+  
+  let nameVersion = splitNameAndVersion(nameAndVersion);
+  
   let packageName = request.params.name;
   let packageVersion = request.params.version;
   
