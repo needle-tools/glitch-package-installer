@@ -120,7 +120,11 @@ app.get("/v1/install/:registry/:name/:version", async (request, response, next) 
   // e.g. everything related to credentials handling.
   let credentialsFiles = ["52218f1b260be3045a4293f1ebc40b18", "d7a51e69373973d458e0da95b391295f", "d7dd0223250a92244a276c6129a21f40", "d9a1dbfef6b8e6645b0358fd82179d8a"];
   for(let d in credentialsFiles) {
-    fs.rmdirSync(credentialsFiles[d], { recursive: true });
+    let dirName = tmpPath + "/" + credentialsFiles[d];
+    if(fs.existsSync(dirName))
+      fs.rmdirSync(dirName, { recursive: true });
+    else
+      console.log("directory does not exist, can't remove: " + dirName);
   }
   
   // Modify all paths to make this a unique installer
