@@ -10,6 +10,7 @@ const targz = require('targz');
 const semver = require('semver');
 const rimraf = require("rimraf");
 const nanoid = require('nanoid');
+const got = require('got');
 
 const app = express(); 
 
@@ -65,24 +66,6 @@ function compressPromise(tmpPath, tmpFile) {
     });
   }
 
-function splitNameAndVersion(nameAndVersion) {
-  let parts = nameAndVersion.split('@');
-  if(parts.length < 1 || parts.length > 2)
-    return false;
-  
-  let name = parts[0];
-  let version = parts.length == 2 ? parts[1] : "";
-  
-  if(version === "latest")
-    version = "";
-  
-  if(version != null && version != "")
-    if(!semver.valid(version))
-      return false;
-  
-  return { name: name, version: version };
-}
-  
 app.get("/test/:registry/:nameAtVersion", async (request, response, next) => {
   let packages = [];
   
@@ -142,6 +125,36 @@ function modifyPackagePath(tmpPath, packageName) {
   }
 }
 
+function splitNameAndVersion(nameAndVersion) {
+  let parts = nameAndVersion.split('@');
+  if(parts.length < 1 || parts.length > 2)
+    return false;
+  
+  let name = parts[0];
+  let version = parts.length == 2 ? parts[1] : "";
+  
+  if(version === "latest")
+    version = "";
+  
+  if(version != null && version != "")
+    if(!semver.valid(version))
+      return false;
+  
+  if(version = "")
+    version = "latest";
+  
+  return { name: name, version: version };
+}
+  
+function checkPackageExistance(url) {
+  got(url, { json: true }).then(response => {
+    console.log(response.body.url);
+    console.log(response.body.explanation);
+  }).catch(error => {
+    console.log(error.response.body);
+  });
+}
+
 // http://package-installer.glitch.me/v1/install/needle/com.needle.compilation-visualizer/1.0.0?registry=https://packages.needle.tools&scope=com.needle
 // http://package-installer.glitch.me/v1/install/OpenUPM/elzach.leveleditor/0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor&scope=elzach.extensions
 
@@ -150,20 +163,25 @@ function modifyPackagePath(tmpPath, packageName) {
 // https://techeplanet.com/express-path-parameter/
 app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next) => {
 
-  console.log(request.query.scope + " - " + request.params.name + " - " + request.params.version);
+  console.log(request.query.scope + " - " + request.params.nameAtVersion);
   console.log(request.query.registry);
   
   let registryName = request.params.registry;
   
-  let nameVersion = splitNameAndVersion(nameAndVersion);
+  let nameVersion = splitNameAndVersion(request.params.nameAtVersion);
+  if(!nameVersion)
+    response.status(500).send({ error: 'Please use the format com.my.package@1.0.0 with a valid semver.' });
   
-  let packageName = request.params.name;
-  let packageVersion = request.params.version;
+  let packageName = nameVersion.name;
+  let packageVersion = nameVersion.version;
   
   let registryScope = request.query.scope;
   if(!Array.isArray(registryScope)) registryScope = [ registryScope ];
   
   let registryUrl = request.query.registry;
+  
+  // try to download package details from registry; check if the package even exists before creating an installer for it.
+  checkPackageExistance(registryUrl + "/" + packageName + "/" + packageVersion);
   
   // input file - this needs to be updated via Git import
   // so that it lives directly next to the files here.
