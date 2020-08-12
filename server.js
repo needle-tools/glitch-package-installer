@@ -64,8 +64,6 @@ app.get("/test/:registry/:nameAtVersion", async (request, response, next) => {
   // response.json(request.query);
   let parts0 = request.params.nameAtVersion.split(',');
   for(let key in parts0) {
-    console.log(key + ", " + parts0[key]);
-    
     let parts = parts0[key].split('@');
     if(parts.length != 2) 
       response.status(500).send({ error: 'Please use the format com.my.package@1.0.0 with a valid semver.' });
@@ -80,7 +78,7 @@ app.get("/test/:registry/:nameAtVersion", async (request, response, next) => {
       installType: 1
     });
   }
-    
+  
   response.json(packages);  
 });
 
