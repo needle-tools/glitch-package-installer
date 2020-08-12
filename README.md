@@ -6,6 +6,14 @@ The installers are super hacky (Unity does not provide a clean way to add scoped
 
 At some point this will hopefully become redundant...
 
+# How to use
+
+Minimalistic docs / API base / tests: 
+<b>[package-installer.glitch.me](https://package-installer.glitch.me/)</b>
+
+Report bugs, please: 
+
+
 ## Made by [🌵 Needle](https://needle.tools/)
 
 <b>[@needletools](https://twitter.com/needletools)</b>&nbsp;&nbsp;
