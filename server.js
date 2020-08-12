@@ -153,12 +153,12 @@ function checkPackageExistance(url) {
   return fetch(url, { method: "Get" })
   .then(response => response.json())
   .then(json => {
-    console.log(json);
+    // log fetch response
+    // console.log(json);
     return json;
   })
   .catch(error => {
-    console.log(error);
-    return error;
+    return { error: error };
   });
 }
 
@@ -185,11 +185,32 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   let registryScope = request.query.scope;
   if(!Array.isArray(registryScope)) registryScope = [ registryScope ];
   
+  // if scope is not defined we fall back to package name as scope.
+  // TODO could add a better heuristic here to walk the scope, avoid collisions with unity scopes, and use that instead
+  // as it would result in dependencies (probably) working.
+  if(typeof registryScope === 'undefined' || registryScope == "")
+    registryScope = packageName;
+  
   let registryUrl = request.query.registry;
   
   // try to download package details from registry; check if the package even exists before creating an installer for it.
   let result = await checkPackageExistance(registryUrl + "/" + packageName + "/" + packageVersion);
   console.log("version check result: " + result);
+  
+  if(typeof result.error !== 'undefined') {
+    // TODO we probably want to allow creating installers for packages that need auth.
+    // Someone using the installer might have auth in place.
+    
+    // console.log("BAD BAD ERROR " + result.error);
+    response.status(500).send({ error: result.error });
+    return;
+  }
+  
+  // if we got here, the package exists, is accessible, and ready to be downloaded
+  // let's use the correct latest version if none was specified
+  console.log("Package has version online: " + result.version);
+  if(!semver.valid(packageVersion) && semver.valid(result.version))
+    packageVersion = result.version;
   
   // input file - this needs to be updated via Git import
   // so that it lives directly next to the files here.

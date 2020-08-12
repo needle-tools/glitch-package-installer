@@ -85,10 +85,11 @@
 </h3>
 <ul>
   <li>Should fail: <a href="http://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer@12.0.0?registry=https://packages.needle.tools&scope=com.needle">Version does not exist</a></li>
-  <li>Should fail: <a href="">Registry does not exist</a></li>
-  <li>Should fail: <a href="">Package does not exist</a></li>
-  <li>Should fail: <a href="">Version does not exist</a></li>
-  <li>Should fail: <a href=""></a></li>
+  <li>Should fail: <a href="http://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://nopackages.needle.tools&scope=com.needle">Registry does not exist</a></li>
+  <li>Should fail: <a href="http://package-installer.glitch.me/v1/installer/Needle/com.needle.does-not-exist@1.0.0?registry=https://packages.needle.tools&scope=com.needle">Package does not exist</a></li>
+  <li>Should fail: <a href="http://package-installer.glitch.me/v1/installer/Needle/?registry=https://packages.needle.tools&scope=com.needle">No package specified</a></li>
+  <li>Should work: <a href="http://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer@12.0.0?registry=https://packages.needle.tools">No scope specified</a></li>
+  <li>Should work: <a href="http://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer?registry=https://packages.needle.tools">No version specified</a></li>
 </ul>
   </body>
 </html>
