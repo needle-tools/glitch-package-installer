@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="A cool thing made with Glitch">
+    <meta name="description" content="An easy way to install Unity Packages from scoped registries">
 
     <title>🌵 needle — Package Installers</title>
 
@@ -21,8 +21,11 @@
     
     <h3>What's this?</h3>
     <p>
-      This simple API creates a .unitypackage that will install a Package Manager package into your project.<br/>
-      It will add the required scopes, automatically fetch the latest available version on installation, and remove itself after installation.</p>
+      This simple API creates a <a href="https://docs.unity3d.com/Manual/AssetPackages.html">.unitypackage</a> that will install a <a href="https://docs.unity3d.com/Manual/Packages.html">Unity Package Manager package</a> into your Unity project.<br/>
+      It will add the required scopes, automatically fetch the latest available version on installation, and remove itself after installation.<br/>
+      You can simply drop such a .unitypackage into Unity and click "import".<br/>
+      This reduces the friction of using custom registries considerably.
+    </p>
       <p>
         The only reason this is required is because Unity is treating packages with a love/hate relationship currently; <br/>all of this could be much, much easier. See <a href="#what-unity-could-do">What Unity Could Do</a>, especially if you're a Unity person.<br/>
     </p>
@@ -32,9 +35,7 @@
     <h3>
     Basic API
     </h3>
-    <p>
-    <pre>http://package-installer.glitch.me/v1/installer/<span style="color:red;">RegistryName</span>/<span style="color:green;">com.mycompany.mypackage</span>?registry=<span style="color:blue;">com.mycompany.mypackage</span></pre>
-    </p>
+      <pre>http://package-installer.glitch.me/v1/installer/<span style="color:red;">RegistryName</span>/<span style="color:green;">com.mycompany.mypackage</span>?registry=<span style="color:blue;">https://packages.myregistry.com</span></pre>
     <h3>
     Minimal example – latest version, automatic scope
   </h3>
@@ -42,19 +43,17 @@
     If you omit the version, the latest available will be used. If you omit the scope, the package name and dependencies will be used as scopes automatically.
   </p>
     <p>
-  <a href="http://package-installer.glitch.me/v1/installer/OpenUPM/com.littlebigfun.addressable-importer@0.9.1?registry=https://package.openupm.com&scope=com.littlebigfun">
+  <a href="https://package-installer.glitch.me/v1/installer/OpenUPM/com.littlebigfun.addressable-importer@0.9.1?registry=https://package.openupm.com&scope=com.littlebigfun">
   Download Installer for <b>Addressable Importer</b>
   </a>
       <br/>
   <a href="https://package.openupm.com/com.littlebigfun.addressable-importer/latest">Link to package on registry</a>
   </p>
-      <p>
-      <pre>http://package-installer.glitch.me/v1/installer/ <span>api base</span>
+      <pre class="docs">http://package-installer.glitch.me/v1/installer/ <span>api base</span>
   OpenUPM/ <span>registry name</span>
     com.littlebigfun.addressable-importer <span>package name</span>
       ?registry=https://package.openupm.com <span>registry url</span>
       </pre>
-    </p>
   
     <h3>
       Install a single package
@@ -63,21 +62,19 @@
       Depending on how you set the scope, other packages from your registry will be visible and installable through PackMan.
     </p>
     <p>
-      <a href="http://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://packages.needle.tools&scope=com.needle">
+      <a href="https://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://packages.needle.tools&scope=com.needle">
       Download Installer for <b>Needle Compilation Visualizer</b>
       </a>
       <br/>
       <a href="https://packages.needle.tools/com.needle.compilation-visualizer/latest">Link to package on registry</a>
     </p>
-    <p>
-      <pre>http://package-installer.glitch.me/v1/installer/ <span>api base</span>
+      <pre class="docs">http://package-installer.glitch.me/v1/installer/ <span>api base</span>
   Needle/ <span>registry name</span>
     com.needle.compilation-visualizer <span>package name</span>
       @1.0.0 <span>version to install</span>
         ?registry=https://packages.needle.tools <span>registry url</span>
           &scope=com.needle <span>scope</span>
       </pre>
-    </p>
 
   
     <h3>
@@ -87,26 +84,33 @@
       If you don't specify the scope, the first level of dependencies will be automatically included. This helps to support e.g. packages on OpenUPM with dependencies between them. This package for example has a dependency on another OpenUPM package that will be automatically installed alongside.
   </p>
   <p>
-    <a href="http://package-installer.glitch.me/v1/installer/OpenUPM/elzach.leveleditor@0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor">
+    <a href="https://package-installer.glitch.me/v1/installer/OpenUPM/elzach.leveleditor@0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor">
       Download Installer for <b>ElZach LevelEditor</b>
     </a>
     <br/>
     <a href="https://package.openupm.com/elzach.leveleditor/latest">Link to package on registry</a>
   </p>
-    <p>
-      <pre>http://package-installer.glitch.me/v1/installer/ <span>api base</span>
+      <pre class="docs">http://package-installer.glitch.me/v1/installer/ <span>api base</span>
   OpenUPM/ <span>registry name</span>
     elzach.leveleditor <span>package name</span>
       @0.0.7 <span>version to install</span>
         ?registry=https://package.openupm.com <span>registry url</span>
           &scope=elzach.leveleditor&scope=elzach.extensions <span>multiple scopes</span>
       </pre>
-    </p>
 
+<h3 id="what-unity-could-do">
+  What Unity could do to make this easier
+</h3>
+<ul>
+  <li>Add support for scoped registries and custom packages in .unitypackage manifest files</li>
+  <li>Add deep linking support for Unity / Hub to install packages</li>
+  <li>Add a proper (public) API to add/remove/update scoped registries</li>
+  <li>Fix all the remaning issues around updating packages and scoped registries (e.g. need to re-focus Unity, ...)</li>
+</ul>
+    
 <h3>
   TODO // Unsupported
 </h3>
-<p>
  <ul>
    <li>Specify package installation mode (currently: always uses latest available, no matter which version was specified)</li>
    <li>Install multiple packages</li>
@@ -121,28 +125,22 @@
    <li>Add option to include auth tools (Tomlyn for .npm auth setup)</li>
    <li>Open PackMan after installation</li>
 </ul> 
-<h3 id="what-unity-could-do">
-  What Unity could do to make this easier
-</h3>
-<ul>
-  <li>Add support for scoped registries and custom packages in .unitypackage manifest files</li>
-  <li>Add deep linking support for Unity / Hub to install packages</li>
-  <li>Add a proper (public) API to add/remove/update scoped registries</li>
-  <li>Fix all the remaning issues around updating packages and scoped registries (e.g. need to re-focus Unity, ...)</li>
-</ul>
-</p>
+    
 <h3>
   Tests
 </h3>
 <ul>
-  <li>Should fail: <a href="http://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer@12.0.0?registry=https://packages.needle.tools&scope=com.needle">Version does not exist</a></li>
-  <li>Should fail: <a href="http://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://nopackages.needle.tools&scope=com.needle">Registry does not exist</a></li>
-  <li>Should fail: <a href="http://package-installer.glitch.me/v1/installer/Needle/com.needle.does-not-exist@1.0.0?registry=https://packages.needle.tools&scope=com.needle">Package does not exist</a></li>
-  <li>Should fail: <a href="http://package-installer.glitch.me/v1/installer/Needle/?registry=https://packages.needle.tools&scope=com.needle">No package specified</a></li>
-  <li>Should work: <a href="http://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://packages.needle.tools">No scope specified</a></li>
-  <li>Should work: <a href="http://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer?registry=https://packages.needle.tools">No scope/version specified</a></li>
-  <li>Should work: <a href="http://package-installer.glitch.me/v1/installer/OpenUPM/elzach.leveleditor@0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor&scope=elzach.extensions">Multiple scopes</a></li>
-  <li>Should work: <a href="http://package-installer.glitch.me/v1/installer/OpenUPM/elzach.leveleditor?registry=https://package.openupm.com">No scope specified but has dependendant scopes</a></li>
+  <li>Should fail: <a href="https://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer@12.0.0?registry=https://packages.needle.tools&scope=com.needle">Version does not exist</a></li>
+  <li>Should fail: <a href="https://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://nopackages.needle.tools&scope=com.needle">Registry does not exist</a></li>
+  <li>Should fail: <a href="https://package-installer.glitch.me/v1/installer/Needle/com.needle.does-not-exist@1.0.0?registry=https://packages.needle.tools&scope=com.needle">Package does not exist</a></li>
+  <li>Should fail: <a href="https://package-installer.glitch.me/v1/installer/Needle/?registry=https://packages.needle.tools&scope=com.needle">No package specified</a></li>
+  <li>Should work: <a href="https://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://packages.needle.tools">No scope specified</a></li>
+  <li>Should work: <a href="https://package-installer.glitch.me/v1/installer/Needle/com.needle.compilation-visualizer?registry=https://packages.needle.tools">No scope/version specified</a></li>
+  <li>Should work: <a href="https://package-installer.glitch.me/v1/installer/OpenUPM/elzach.leveleditor@0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor&scope=elzach.extensions">Multiple scopes</a></li>
+  <li>Should work: <a href="https://package-installer.glitch.me/v1/installer/OpenUPM/elzach.leveleditor?registry=https://package.openupm.com">No scope specified but has dependendant scopes</a></li>
 </ul>
+<h3>
+  Tests
+</h3>
   </body>
 </html>

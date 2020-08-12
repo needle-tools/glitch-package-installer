@@ -55,12 +55,12 @@ footer {
   border-top: 1px solid lightgrey;
 }
 
-pre span {
+pre.docs span {
   font-style:italic;
   color: green;
   margin-left:10px;
 }
 
-pre span::before {
+pre.docs span::before {
   content: "← ";
 }
