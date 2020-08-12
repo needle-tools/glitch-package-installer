@@ -8,8 +8,9 @@ const fs = require('fs-extra');
 const yaml = require('js-yaml');
 const targz = require('targz');
 const semver = require('semver');
+const rimraf = require("rimraf");
 
-const app = express();
+const app = express(); 
 
 // make all the files in 'public' available
 // https://expressjs.com/en/starter/static-files.html
@@ -122,7 +123,8 @@ app.get("/v1/install/:registry/:name/:version", async (request, response, next) 
   for(let d in credentialsFiles) {
     let dirName = tmpPath + "/" + credentialsFiles[d];
     if(fs.existsSync(dirName))
-      fs.rmdirSync(dirName, { recursive: true });
+      // fs.rmdirSync(dirName, { recursive: true });
+      rimraf.sync(dirName);
     else
       console.log("directory does not exist, can't remove: " + dirName);
   }
