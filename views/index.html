@@ -34,10 +34,31 @@
     <p>
       <pre>http://package-installer.glitch.me/v1/installer/ <span>api base</span>
   Needle/ <span>registry name</span>
-    com.needle.compilation-visualizer/ <span>package name</span>
-      1.0.0 <span>version to install</span>
+    com.needle.compilation-visualizer <span>package name</span>
+      @1.0.0 <span>version to install</span>
         ?registry=https://packages.needle.tools <span>registry url</span>
           &scope=com.needle <span>scope</span>
+      </pre>
+    </p>
+  
+  <h3>
+    Minimal example – latest version, automatic scope
+  </h3>
+  <p>
+    If you omit the version, the latest available will be used. If you omit the scope, the package name and dependencies will be used as scopes automatically.
+  </p>
+    <p>
+  <a href="http://package-installer.glitch.me/v1/installer/OpenUPM/com.littlebigfun.addressable-importer@0.9.1?registry=https://package.openupm.com&scope=com.littlebigfun">
+  Download Installer for <b>Addressable Importer</b>
+  </a>
+      <br/>
+  <a href="https://package.openupm.com/com.littlebigfun.addressable-importer/latest">Link to package on registry</a>
+  </p>
+      <p>
+      <pre>http://package-installer.glitch.me/v1/installer/ <span>api base</span>
+  OpenUPM/ <span>registry name</span>
+    com.littlebigfun.addressable-importer <span>package name</span>
+      ?registry=https://package.openupm.com <span>registry url</span>
       </pre>
     </p>
   
@@ -57,8 +78,8 @@
     <p>
       <pre>http://package-installer.glitch.me/v1/installer/ <span>api base</span>
   OpenUPM/ <span>registry name</span>
-    elzach.leveleditor/ <span>package name</span>
-      0.0.7 <span>version to install</span>
+    elzach.leveleditor <span>package name</span>
+      @0.0.7 <span>version to install</span>
         ?registry=https://package.openupm.com <span>registry url</span>
           &scope=elzach.leveleditor&scope=elzach.extensions <span>multiple scopes</span>
       </pre>
