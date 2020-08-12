@@ -54,3 +54,13 @@ footer {
   padding-top: 1.5em;
   border-top: 1px solid lightgrey;
 }
+
+pre span {
+  font-style:italic;
+  color: green;
+  margin-left:10px;
+}
+
+pre span::before {
+  content: "← ";
+}

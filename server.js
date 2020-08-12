@@ -9,7 +9,6 @@ const yaml = require('js-yaml');
 const targz = require('targz');
 const semver = require('semver');
 const rimraf = require("rimraf");
-
 const nanoid = require('nanoid');
 
 const app = express(); 
@@ -108,7 +107,7 @@ function modifyPackagePath(tmpPath, packageName) {
   // Modify all paths to make this a unique installer
   // get all directories
   let dirs = getDirectories(tmpPath);
-  console.log(dirs);
+  // console.log(dirs);
   
   let newPackageName = "Packages/installer." + packageName + "/";
   
@@ -118,7 +117,7 @@ function modifyPackagePath(tmpPath, packageName) {
     let pathnamePath = tmpPath + "/" + dir + "/pathname";
     // - open the single line in the file "path"
     let pathData = fs.readFileSync(pathnamePath, 'utf8');
-    console.log("in dir: " + dirs[d] + ": " + pathData);
+    // console.log("in dir: " + dirs[d] + ": " + pathData);
     // - change the path prefix to a common one for this installer
     pathData = pathData.replace("Packages/com.needle.auto-installer/", newPackageName); 
     // - write the "path" file again
@@ -148,10 +147,11 @@ app.get("/v1/installer/:registry/:name/:version", async (request, response, next
   
   // input file - this needs to be updated via Git import
   // so that it lives directly next to the files here.
+  // this is a renamed .unitypackage file (which is just a .tar.gz)
   // CAREFUL - selecting the file in the glitch UI will weirdly convert it to some text format?! DO NOT TOUCH this file through the Glitch UI
   let file = __dirname + "/DO-NOT-TOUCH/" + "archtemp.tar.gz";
   
-  // generate temporary paths to unpack/pack the 
+  // generate temporary paths to unpack/pack the archive file
   let salt = nanoid.nanoid() + "_" + Date.now();
   let tmpPath = '/tmp/my_package_folder_' + salt;
   let tmpFile = '/tmp/my_package_file_' + salt + '.tar.gz';
@@ -170,6 +170,10 @@ app.get("/v1/installer/:registry/:name/:version", async (request, response, next
   let assetFile = tmpPath + "/" + dataGuid + "/" + "asset";
   var data = fs.readFileSync(assetFile, 'utf8');
   
+  // we need to split the original file into parts
+  // since Unity's YAML format is not spec conform.
+  // we split off the header, and treat the rest as valid yaml.
+  // Note: There's probably a way to configure the yaml parser to accept the Unity headers
   const splitLines = str => str.split(/\r?\n/);
   let split_lines = splitLines(data);
   
@@ -177,20 +181,6 @@ app.get("/v1/installer/:registry/:name/:version", async (request, response, next
   let startWithBrokenYamlTag = split_lines.slice(0, 3).join("\n");
   
   let yamlData = yaml.load(some_lines.join("\n"));
-  /*
-  yamlData["MonoBehaviour"]["registries"] = [{
-    name: "pfc",
-    url: "https://prefrontalcortex.de",
-    scope: [
-      "com.pfc"
-    ]
-  }];
-  yamlData["MonoBehaviour"]["packages"] = [{
-    name: "com.pfc.dialoguesystem",
-    version: "1.0.0",
-    installType: 1
-  }];
-  */
   
   yamlData["MonoBehaviour"]["registries"] = [{
     name: registryName,
@@ -210,7 +200,10 @@ app.get("/v1/installer/:registry/:name/:version", async (request, response, next
   
   /// END MODIFY PACKAGE CONTENT  
   
+  // pack into a .tar.gz again
   let compressPath = await compressPromise(tmpPath, tmpFile);  
+  
+  // serve as .unitypackage with a nice name related to the package name and version.
   response.download(compressPath, "Install-" + packageName + "-" + packageVersion + ".unitypackage");
 });
 
