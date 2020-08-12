@@ -118,7 +118,7 @@ function modifyPackagePath(tmpPath, packageName) {
     let pathData = fs.readFileSync(pathnamePath, 'utf8');
     console.log("in dir: " + dirs[d] + ": " + pathData);
     // - change the path prefix to a common one for this installer
-    pathData = pathData.replace("Packages/com.needle.auto-installer/", newPackageName);
+    pathData = pathData.replace("Packages/com.needle.auto-installer/", newPackageName); 
     // - write the "path" file again
     fs.writeFileSync(pathnamePath, pathData, 'utf8');
   }
