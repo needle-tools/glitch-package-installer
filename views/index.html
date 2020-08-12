@@ -84,7 +84,7 @@
       If you don't specify the scope, the first level of dependencies will be automatically included. This helps to support e.g. packages on OpenUPM with dependencies between them. This package for example has a dependency on another OpenUPM package that will be automatically installed alongside.
   </p>
   <p>
-    <a href="https://package-installer.glitch.me/v1/installer/OpenUPM/elzach.leveleditor@0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor">
+    <a href="https://package-installer.glitch.me/v1/installer/OpenUPM/elzach.leveleditor?registry=https://package.openupm.com">
       Download Installer for <b>ElZach LevelEditor</b>
     </a>
     <br/>
@@ -93,9 +93,7 @@
       <pre class="docs">http://package-installer.glitch.me/v1/installer/ <span>api base</span>
   OpenUPM/ <span>registry name</span>
     elzach.leveleditor <span>package name</span>
-      @0.0.7 <span>version to install</span>
-        ?registry=https://package.openupm.com <span>registry url</span>
-          &scope=elzach.leveleditor&scope=elzach.extensions <span>multiple scopes</span>
+      ?registry=https://package.openupm.com <span>registry url</span>
       </pre>
 
 <h3 id="what-unity-could-do">
@@ -107,6 +105,7 @@
   <li>Add a proper (public) API to add/remove/update scoped registries</li>
   <li>Fix issues around updating packages and scoped registries (e.g. need to re-focus Unity, sometimes no updates until Editor restart, ...)</li>
   <li>Fix compilation issues on package updates (fatal compiler crashes)</li>
+  <li>Backport all these things to LTS versions (2018 + 2019) instead of adding them for Unity 2039.3+ only</li>
 </ul>
     
 <h3>
