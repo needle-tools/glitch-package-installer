@@ -97,14 +97,16 @@ app.get("/test/:registry/:nameAtVersion", async (request, response, next) => {
 // https://techeplanet.com/express-path-parameter/
 app.get("/v1/install/:registry/:name/:version", async (request, response, next) => {
 
-  console.log(request.params.scope + " - " + request.params.name + " - " + request.params.version);
+  console.log(request.query.scope + " - " + request.params.name + " - " + request.params.version);
   console.log(request.query.registry);
   
   let registryName = request.params.registry;
   let packageName = request.params.name;
   let packageVersion = request.params.version;
   
-  let registryScope = request.query.scope;    
+  let registryScope = request.query.scope;
+  if(!Array.isArray(registryScope)) registryScope = [ registryScope ];
+  
   let registryUrl = request.query.registry;
   
   let file = __dirname + "/DO-NOT-TOUCH/" + "archtemp.tar.gz";
@@ -181,9 +183,10 @@ app.get("/v1/install/:registry/:name/:version", async (request, response, next) 
   
   yamlData["MonoBehaviour"]["registries"] = [{
     name: registryName,
-    url: registryUrl
+    url: registryUrl,
+    scope: registryScope
   }];
-  yamlData["MonoBehaviour"]["registries"].scope = Array.isArray(registryScope) ? registryScope : [ registryScope ];
+  
   yamlData["MonoBehaviour"]["packages"] = [{
     name: packageName,
     version: packageVersion,
