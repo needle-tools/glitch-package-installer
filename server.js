@@ -182,6 +182,7 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   let packageVersion = nameVersion.version;
   
   let registryUrl = request.query.registry;
+  registryUrl = registryUrl.replace(/(\r\n|\n|\r)/gm,"");
   
   // try to download package details from registry; check if the package even exists before creating an installer for it.
   let existanceResult = await checkPackageExistance(registryUrl + "/" + packageName + "/" + packageVersion);
@@ -271,7 +272,7 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
     installType: 1
   }];
   
-  let combinedFile = startWithBrokenYamlTag + "\n" + yaml.dump(yamlData);
+  let combinedFile = startWithBrokenYamlTag + "\n" + yaml.dump(yamlData, { lineWidth: 500 });
   
   fs.writeFileSync(assetFile, combinedFile, 'utf8')
   
