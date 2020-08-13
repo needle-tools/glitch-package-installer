@@ -272,6 +272,7 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
     installType: 1
   }];
   
+  // lineWidth param is necessary, otherwise long registry names break in weird >- yaml multiline, which Unity does not (properly?) support.
   let combinedFile = startWithBrokenYamlTag + "\n" + yaml.dump(yamlData, { lineWidth: 500 });
   
   fs.writeFileSync(assetFile, combinedFile, 'utf8')
