@@ -92,7 +92,13 @@ app.get("/test/:registry/:nameAtVersion", async (request, response, next) => {
 function removeCredentialsTools(tmpPath) {
   // remove directories we don't need right now,
   // e.g. everything related to credentials handling.
-  let credentialsFiles = ["52218f1b260be3045a4293f1ebc40b18", "d7a51e69373973d458e0da95b391295f", "d7dd0223250a92244a276c6129a21f40", "d9a1dbfef6b8e6645b0358fd82179d8a"];
+  let credentialsFiles = [
+    "52218f1b260be3045a4293f1ebc40b18", // AutoInstaller.Tomlyn.dll 
+    "d7a51e69373973d458e0da95b391295f", // LICENSE.Tomlyn.md
+    "d7dd0223250a92244a276c6129a21f40", // NPM.cs
+    "d9a1dbfef6b8e6645b0358fd82179d8a", // CredentialManager.cs
+    "4c8f6c9394ae4494998e1fc19268e959", // CredentialWindow.cs
+  ];
   for(let d in credentialsFiles) {
     let dirName = tmpPath + "/" + credentialsFiles[d];
     if(fs.existsSync(dirName))
