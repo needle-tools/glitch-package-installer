@@ -180,14 +180,27 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   
   let registryName = request.params.registry;
   
-  let nameVersion = splitNameAndVersion(request.params.nameAtVersion);
-  if(!nameVersion)
-    response.status(500).send({ error: 'Please use the format com.my.package@1.0.0 with a valid semver.' });
+  let nameAtVersion = request.params.nameAtVersion;
+  if(typeof nameAtVersion === 'undefined' || nameAtVersion == "") {
+    response.status(500).send({ error: 'Please specify a package in the format com.my.package.' });
+    return;
+  }
   
+  let nameVersion = splitNameAndVersion(request.params.nameAtVersion);
+  if(!nameVersion) {
+    response.status(500).send({ error: 'Please use the format com.my.package@1.0.0 with a valid semver.' });
+    return;
+  }
+
+  let registryUrl = request.query.registry;
+  if(typeof registryUrl === 'undefined' || registryUrl == "") {
+    response.status(500).send({ error: 'Please specify a registry URL.' });
+    return;
+  }
+
   let packageName = nameVersion.name;
   let packageVersion = nameVersion.version;
   
-  let registryUrl = request.query.registry;
   registryUrl = registryUrl.replace(/(\r\n|\n|\r)/gm,"");
   
   // try to download package details from registry; check if the package even exists before creating an installer for it.

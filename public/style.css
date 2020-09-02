@@ -22,7 +22,8 @@ form {
   display: grid;
   grid-gap: 1em;
   padding: 1em;
-  max-width: 40ch;
+  margin-bottom:1em;
+  max-width: 60ch;
 }
 
 input {

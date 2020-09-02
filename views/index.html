@@ -111,30 +111,50 @@
 <h3>
   TODO // Unsupported
 </h3>
+<h4>Path to Production Readiness</h4>
+<ul>
+  <li>[VCS Noise] Clean up csproj file when auto-deleting installer</li>
+  <li>[Unity Bug] Investigate if there's a way around the occassional compiler error in Unity when rapidly adding/removing files</li>
+  <li><strike>Do not set up registry if same name already existed with different URL</strike></li>
+  <li><strike>Fix issues with long registry paths and yaml multiline weirdness</strike></li>
+  <li><strike>Add way more sanity checks</strike></li>
+  <li><strike>Check for package existance</strike></li>
+  <li><strike>Make package version optional (use latest)</strike></li>
+  <li><strike>Add tests</strike></li>
+</ul>
+<h4>Generator Features</h4>
+<ul>
+  <li>Specify package installation mode (currently: always uses latest available, no matter which version was specified)</li>
+  <li>Install multiple packages</li>
+  <li>Make an example form for specifying the requested data</li>
+  <li>Specify a manifest.json subset as query parameter</li>
+</ul>
+<h4>Installer Features</h4>
+<ul>
+  <li>Open PackMan after installation</li>
+  <li>Install from a manifest subset directly</li>
+</ul>
+<h4>Possible Features (depends on requests)</h4>
  <ul>
    <li>Infer registry name from registry URL (gets rid of yet another parameter). Could also have a hardcoded list for known registries.</li>
-   <li>Open PackMan after installation</li>
-   <li>Do not set up registry if same name already existed with different URL</li>
-   <li>Clean up csproj file when auto-deleting installer</li>
-   <li><strike>Fix issues with long registry paths and yaml multiline weirdness</strike></li>
-   <li>Investigate if there's a way around the occassional compiler error in Unity when rapidly adding/removing files</li>
-   <li>Specify package installation mode (currently: always uses latest available, no matter which version was specified)</li>
-   <li>Install multiple packages</li>
    <li>Set up multiple registries</li>
    <li>Only set up registry, don't install packages</li>
    <li>Make a nice badge / URL thingy</li>
-   <li><strike>Add way more sanity checks</strike></li>
-   <li><strike>Check for package existance</strike></li>
-   <li><strike>Make package version optional (use latest)</strike></li>
-   <li><strike>Add tests</strike></li>
-   <li>Add option to still get installer if package is inaccessible (e.g. needs auth)</li>
-   <li>Add option to include auth tools (Tomlyn for .npm auth setup)</li>
+   <li>Add support for packages that need auth (e.g. GitHub packages)
+      <ul>
+    <li>Add option to still get installer if package is inaccessible (e.g. needs auth)</li>
+    <li>Add option to include auth tools (Tomlyn for .npm auth setup)</li>
+  </ul>
+   </li>
 </ul> 
     
 <h3>
   Tests
 </h3>
 <ul>
+  <li>Should fail: <a href="./v1/installer/">No parameters</a></li>
+  <li>Should fail: <a href="./v1/installer/Hello/World?q=How%20are%20you">Wrong path</a></li>
+  <li>Should fail: <a href="./v1/installer/Needle/com.needle.compilation-visualizer">Missing registry parameter</a></li>
   <li>Should fail: <a href="./v1/installer/Needle/com.needle.compilation-visualizer@12.0.0?registry=https://packages.needle.tools&scope=com.needle">Version does not exist</a></li>
   <li>Should fail: <a href="./v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://nopackages.needle.tools&scope=com.needle">Registry does not exist</a></li>
   <li>Should fail: <a href="./v1/installer/Needle/com.needle.does-not-exist@1.0.0?registry=https://packages.needle.tools&scope=com.needle">Package does not exist</a></li>
@@ -143,6 +163,50 @@
   <li>Should work: <a href="./v1/installer/Needle/com.needle.compilation-visualizer?registry=https://packages.needle.tools">No scope/version specified</a></li>
   <li>Should work: <a href="./v1/installer/OpenUPM/elzach.leveleditor@0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor&scope=elzach.extensions">Multiple scopes</a></li>
   <li>Should work: <a href="./v1/installer/OpenUPM/elzach.leveleditor?registry=https://package.openupm.com">No scope specified but has dependendant scopes</a></li>
+</ul>
+<h3>Installer Generators - TODO - not working yet</h3>
+<ul>
+
+  <form action="./v1/installer/">
+    <label for="registryName">Registry Name</label>
+    <input type="text" name="registryName" value="OpenUPM"/>
+    <label for="package">Package or Package@Version</label>
+    <input type="text" name="package" value="com.needle.compilation-visualizer"/>
+    <label for="registry">Registry URL</label>
+    <input type="text" name="registry" value="https://package.openupm.com"/>
+    <label for="scope">Scope (optional)</label>
+    <input type="text" name="scope"/>
+    <input type="submit" value="Download Installer"/>
+    <input type="submit" value="Copy Installer Link" formaction="javascript:;" onclick="myCopy(this)" />
+  </form>
+
+ <form action="./v1/installer/">
+    <textarea name="manifest" rows="25" spellcheck=”false”>{
+  "scopedRegistries": [
+    {
+      "name": "package.openupm.com",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "elzach"
+      ]
+    },
+    {
+      "name": "needle-github",
+      "url": "https://packages.needle.tools",
+      "scopes": [
+        "com.needle"
+      ]
+    }
+  ],
+  "dependencies": {
+    "com.needle.compilation-visualizer":"latest",
+    "elzach.leveleditor":"latest"
+  }
+}</textarea>
+    <input type="submit" value="Download Installer"/>
+    <input type="submit" value="Copy Installer Link" formaction="javascript:;" onclick="myCopy(this)" />
+  </form>
+
 </ul>
 
     <h3>
@@ -154,6 +218,5 @@
     <a href="https://twitter.com/hybridherbst">@hybridherbst</a>&nbsp;&nbsp;
     <a href="https://twitter.com/marcel_wiessler">@marcel_wiessler</a>&nbsp;&nbsp;
   </p>
-    
   </body>
 </html>
