@@ -114,12 +114,12 @@
 <ul>
   <li>[VCS Noise] Clean up csproj file when auto-deleting installer</li>
   <li>[Unity Bug] Investigate if there's a way around the occassional compiler error in Unity when rapidly adding/removing files</li>
-  <li><strike>Do not set up registry if same name already existed with different URL</strike></li>
-  <li><strike>Fix issues with long registry paths and yaml multiline weirdness</strike></li>
-  <li><strike>Add way more sanity checks</strike></li>
-  <li><strike>Check for package existance</strike></li>
-  <li><strike>Make package version optional (use latest)</strike></li>
-  <li><strike>Add tests</strike></li>
+  <li><s>Do not set up registry if same name already existed with different URL</s></li>
+  <li><s>Fix issues with long registry paths and yaml multiline weirdness</s></li>
+  <li><s>Add way more sanity checks</s></li>
+  <li><s>Check for package existance</s></li>
+  <li><s>Make package version optional (use latest)</s></li>
+  <li><s>Add tests</s></li>
 </ul>
 <h4>Generator Features</h4>
 <ul>
@@ -173,13 +173,13 @@
 
   <form action="./v1/installer/">
     <label for="registryName">Registry Name</label>
-    <input type="text" name="registryName" value="OpenUPM"/>
+    <input type="text" name="registryName" id="registryName" value="OpenUPM"/>
     <label for="package">Package or Package@Version</label>
-    <input type="text" name="package" value="com.needle.compilation-visualizer"/>
+    <input type="text" name="package" id="package" value="com.needle.compilation-visualizer"/>
     <label for="registry">Registry URL</label>
-    <input type="text" name="registry" value="https://package.openupm.com"/>
+    <input type="text" name="registry" id="registry" value="https://package.openupm.com"/>
     <label for="scope">Scope (optional)</label>
-    <input type="text" name="scope"/>
+    <input type="text" name="scope" id="scope"/>
     <input type="submit" value="Download Installer"/>
     <input type="submit" value="Copy Installer Link" formaction="javascript:;" onclick="myCopy(this)" />
   </form>
@@ -212,7 +212,7 @@
   </form>
 
 </ul>
-    
+    <!--
     <h3>
       Experimental
     </h3>
@@ -221,7 +221,8 @@
       <a href="com.unity3d.kharma:selected-sample/Receiver1#someData">test custom data</a>
       <a href="com.unity3d.kharma:selected-sample/Receiver2#someOtherData">test custom data</a>
     </p>
-
+    -->
+    
     <h3>
        Made by <a href="https://needle.tools">🌵 Needle</a>
     </h3>
