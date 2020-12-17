@@ -43,16 +43,17 @@
     If you omit the version, the latest available will be used. If you omit the scope, the package name and dependencies will be used as scopes automatically.
   </p>
     <p>
-  <a href="./v1/installer/OpenUPM/com.littlebigfun.addressable-importer@0.9.1?registry=https://package.openupm.com&scope=com.littlebigfun">
-  Download Installer for <b>Addressable Importer</b>
-  </a>
+      <a href="./v1/installer/Needle/com.needle.compilation-visualizer?registry=https://packages.needle.tools&scope=com.needle">
+        Download Installer for <b>Needle Compilation Visualizer</b>
+      </a>
       <br/>
-  <a href="https://package.openupm.com/com.littlebigfun.addressable-importer/latest">Link to package on registry</a>
-  </p>
-      <pre class="docs">http://package-installer.glitch.me/v1/installer/ <span>api base</span>
-  OpenUPM/ <span>registry name</span>
-    com.littlebigfun.addressable-importer <span>package name</span>
-      ?registry=https://package.openupm.com <span>registry url</span>
+      <a href="https://packages.needle.tools/com.needle.compilation-visualizer/latest">Link to package on registry</a>
+    </p>
+    <pre class="docs">http://package-installer.glitch.me/v1/installer/ <span>api base</span>
+  Needle/ <span>registry name</span>
+    com.needle.compilation-visualizer <span>package name</span>
+        ?registry=https://packages.needle.tools <span>registry url</span>
+          &scope=com.needle <span>scope (optional)</span>
       </pre>
   
     <h3>
@@ -62,21 +63,19 @@
       Depending on how you set the scope, other packages from your registry will be visible and installable through PackMan.
     </p>
     <p>
-      <a href="./v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://packages.needle.tools&scope=com.needle">
-      Download Installer for <b>Needle Compilation Visualizer</b>
+      <a href="./v1/installer/OpenUPM/com.littlebigfun.addressable-importer@0.9.1?registry=https://package.openupm.com&scope=com.littlebigfun">
+        Download Installer for <b>Addressable Importer</b>
       </a>
       <br/>
-      <a href="https://packages.needle.tools/com.needle.compilation-visualizer/latest">Link to package on registry</a>
+      <a href="https://package.openupm.com/com.littlebigfun.addressable-importer/latest">Link to package on registry</a>
     </p>
-      <pre class="docs">http://package-installer.glitch.me/v1/installer/ <span>api base</span>
-  Needle/ <span>registry name</span>
-    com.needle.compilation-visualizer <span>package name</span>
-      @1.0.0 <span>version to install</span>
-        ?registry=https://packages.needle.tools <span>registry url</span>
-          &scope=com.needle <span>scope</span>
+    <pre class="docs">http://package-installer.glitch.me/v1/installer/ <span>api base</span>
+  OpenUPM/ <span>registry name</span>
+    com.littlebigfun.addressable-importer <span>package name</span>
+      @0.9.1 <span>version to install (optional)</span>
+        ?registry=https://package.openupm.com <span>registry url</span>
       </pre>
-
-  
+    
     <h3>
       Install package & dependencies for registries with many scopes (e.g. OpenUPM)
     </h3>
@@ -115,12 +114,12 @@
 <ul>
   <li>[VCS Noise] Clean up csproj file when auto-deleting installer</li>
   <li>[Unity Bug] Investigate if there's a way around the occassional compiler error in Unity when rapidly adding/removing files</li>
-  <li><strike>Do not set up registry if same name already existed with different URL</strike></li>
-  <li><strike>Fix issues with long registry paths and yaml multiline weirdness</strike></li>
-  <li><strike>Add way more sanity checks</strike></li>
-  <li><strike>Check for package existance</strike></li>
-  <li><strike>Make package version optional (use latest)</strike></li>
-  <li><strike>Add tests</strike></li>
+  <li><s>Do not set up registry if same name already existed with different URL</s></li>
+  <li><s>Fix issues with long registry paths and yaml multiline weirdness</s></li>
+  <li><s>Add way more sanity checks</s></li>
+  <li><s>Check for package existance</s></li>
+  <li><s>Make package version optional (use latest)</s></li>
+  <li><s>Add tests</s></li>
 </ul>
 <h4>Generator Features</h4>
 <ul>
@@ -163,19 +162,24 @@
   <li>Should work: <a href="./v1/installer/Needle/com.needle.compilation-visualizer?registry=https://packages.needle.tools">No scope/version specified</a></li>
   <li>Should work: <a href="./v1/installer/OpenUPM/elzach.leveleditor@0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor&scope=elzach.extensions">Multiple scopes</a></li>
   <li>Should work: <a href="./v1/installer/OpenUPM/elzach.leveleditor?registry=https://package.openupm.com">No scope specified but has dependendant scopes</a></li>
+  <li>Should fail on install: <a href="./v1/installer/OpenUPM/elzach.leveleditor?registry=https://package.openupm.com&scope=">Empty explicit scope</a></li>
+</ul>
+<ul>
+  <li>Should fail: Installing two packages with same registry name but different registry URLs</li>
+  <li>Should work: Installing two packages with same registry name and URL with and without / at the end</li>
 </ul>
 <h3>Installer Generators - TODO - not working yet</h3>
 <ul>
 
   <form action="./v1/installer/">
     <label for="registryName">Registry Name</label>
-    <input type="text" name="registryName" value="OpenUPM"/>
+    <input type="text" name="registryName" id="registryName" value="OpenUPM"/>
     <label for="package">Package or Package@Version</label>
-    <input type="text" name="package" value="com.needle.compilation-visualizer"/>
+    <input type="text" name="package" id="package" value="com.needle.compilation-visualizer"/>
     <label for="registry">Registry URL</label>
-    <input type="text" name="registry" value="https://package.openupm.com"/>
+    <input type="text" name="registry" id="registry" value="https://package.openupm.com"/>
     <label for="scope">Scope (optional)</label>
-    <input type="text" name="scope"/>
+    <input type="text" name="scope" id="scope"/>
     <input type="submit" value="Download Installer"/>
     <input type="submit" value="Copy Installer Link" formaction="javascript:;" onclick="myCopy(this)" />
   </form>
@@ -208,7 +212,17 @@
   </form>
 
 </ul>
-
+    <!--
+    <h3>
+      Experimental
+    </h3>
+    <p>
+      <a href="com.unity3d.kharma:custom/CustomData">test custom data</a>
+      <a href="com.unity3d.kharma:selected-sample/Receiver1#someData">test custom data</a>
+      <a href="com.unity3d.kharma:selected-sample/Receiver2#someOtherData">test custom data</a>
+    </p>
+    -->
+    
     <h3>
        Made by <a href="https://needle.tools">🌵 Needle</a>
     </h3>

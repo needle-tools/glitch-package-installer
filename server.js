@@ -204,23 +204,23 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   registryUrl = registryUrl.replace(/(\r\n|\n|\r)/gm,"");
   
   // try to download package details from registry; check if the package even exists before creating an installer for it.
-  let existanceResult = await checkPackageExistance(registryUrl + "/" + packageName + "/" + packageVersion);
-  console.log("version check result: " + existanceResult);
+  let existenceResult = await checkPackageExistance(registryUrl + "/" + packageName + "/" + packageVersion);
+  // console.log("version check result: " + existenceResult);
   
-  if(typeof existanceResult.error !== 'undefined') {
+  if(typeof existenceResult.error !== 'undefined') {
     // TODO we probably want to allow creating installers for packages that need auth.
     // Someone using the installer might have auth in place.
     
-    // console.log("BAD BAD ERROR " + existanceResult.error);
-    response.status(500).send({ error: existanceResult.error });
+    // console.log("BAD BAD ERROR " + existenceResult.error);
+    response.status(500).send({ error: existenceResult.error });
     return;
   }
   
   // if we got here, the package exists, is accessible, and ready to be downloaded
   // let's use the correct latest version if none was specified
-  console.log("Package has version online: " + existanceResult.version);
-  if(!semver.valid(packageVersion) && semver.valid(existanceResult.version))
-    packageVersion = existanceResult.version;
+  console.log("Package has version online: " + existenceResult.version);
+  if(!semver.valid(packageVersion) && semver.valid(existenceResult.version))
+    packageVersion = existenceResult.version;
   
   
   let registryScope = request.query.scope;
@@ -231,10 +231,10 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   // as it would result in dependencies (probably) working.
   if(typeof registryScope === 'undefined' || registryScope == "") {
     registryScope = [ packageName ];
-    if(typeof existanceResult.dependencies !== 'undefined') {
+    if(typeof existenceResult.dependencies !== 'undefined') {
       // filter out only the ones that are NOT from unity
-      console.log(existanceResult.dependencies);
-      for(var dep in existanceResult.dependencies) {
+      console.log(existenceResult.dependencies);
+      for(var dep in existenceResult.dependencies) {
         if(!dep.startsWith("com.unity"))
           registryScope.push(dep);
       }
@@ -255,7 +255,7 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   
   fs.ensureDir(tmpPath);
     
-  let targetPath = await decompressPromise(file, tmpPath);
+  await decompressPromise(file, tmpPath);
   
   /// MODIFY PACKAGE CONTENT
   
@@ -263,10 +263,13 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   modifyPackagePath(tmpPath, packageName);
   
   // Modify PackageData.asset:
-  let dataGuid = "54e893365203989479ba056e0bf3174a";
+  let dataGuid = "b1cc3aaabe2c9eb409d171f25c3311b5";
   let assetFile = tmpPath + "/" + dataGuid + "/" + "asset";
-  var data = fs.readFileSync(assetFile, 'utf8');
+  let data = fs.readFileSync(assetFile, 'utf8');
   
+  /*
+  /// This is for modifying a Unity YAML file. Old format was that, new format is a "manifest part" json file
+  /// with the same configuration as the manifest.json that Unity uses anyways.
   // we need to split the original file into parts
   // since Unity's YAML format is not spec conform.
   // we split off the header, and treat the rest as valid yaml.
@@ -293,6 +296,21 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   
   // lineWidth param is necessary, otherwise long registry names break in weird >- yaml multiline, which Unity does not (properly?) support.
   let combinedFile = startWithBrokenYamlTag + "\n" + yaml.dump(yamlData, { lineWidth: 500 });
+  */
+  
+  let manifestSubset = {
+    dependencies: {},
+    scopedRegistries: [
+      {
+        name: registryName,
+        url: registryUrl,
+        scopes: registryScope
+      }
+    ]
+  }
+  manifestSubset.dependencies[packageName] = packageVersion;
+  
+  let combinedFile = JSON.stringify(manifestSubset, null, 2);
   
   fs.writeFileSync(assetFile, combinedFile, 'utf8')
   
