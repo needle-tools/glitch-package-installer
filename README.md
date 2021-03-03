@@ -14,6 +14,8 @@ Minimalistic docs / API base / tests:
 Report bugs, please: 
 [GitHub Issues](https://github.com/needle-tools/glitch-package-installer/issues)
 
+[Tests](com.unity3d.kharma:upmpackage/com.pfc.variants)
+
 ## Made by [🌵 Needle](https://needle.tools/)
 
 <b>[@needletools](https://twitter.com/needletools)</b>&nbsp;&nbsp;
