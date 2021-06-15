@@ -12,11 +12,15 @@ const rimraf = require("rimraf");
 const nanoid = require('nanoid');
 const fetch = require('node-fetch');
 
+const stats  = require("./stats");
+
 const app = express(); 
 
 // make all the files in 'public' available
 // https://expressjs.com/en/starter/static-files.html
 app.use(express.static("public")); 
+
+stats.setupApp(app);
 
 // https://expressjs.com/en/starter/basic-routing.html
 app.get("/", (request, response) => {
