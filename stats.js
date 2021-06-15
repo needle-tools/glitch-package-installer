@@ -8,10 +8,19 @@
     //save();
     
     load();
-
-    app.get("/private/magick/stats", (request, response) => {
+    
+    const getStats = function(response){
       //module.exports.register({ name: "com.needle.test", version: "1.0.0" });
       response.json(db);
+    }
+
+    app.get("/private/magick/stats", (request, response) => {
+      getStats(response);
+    });
+
+    // https://hashgenerator.de/
+    app.get("/public/stats/098f6bcd4621d373cade4e832627b4f6", (request, response) => {
+      getStats(response);
     });
   };
 
