@@ -16,20 +16,33 @@
   };
 
   module.exports.register = function(data) {
+    if(db === undefined) return;
     if (data === undefined) return;
-    const { name, version } = data;
-    if (name === undefined || version === undefined) return;
-    if (db[name] === undefined) db[name] = { downloads: 1 };
-    else db[name].downloads += 1;
-
+    
     const lastAccess = new Date().toUTCString();
     
-    const pack = db[name];
+    if(db.meta === undefined) db.meta = {};
+    const meta = db.meta;
+    meta.lastAccess = lastAccess;
+    
+    if(db.downloads === undefined) db.downloads = {};
+    const downloads = db.downloads;
+    
+    const { name, version } = data;
+    if (name === undefined || version === undefined) return;
+    if (downloads[name] === undefined) downloads[name] = { downloads: 1 };
+    else downloads[name].downloads += 1;
+
+    
+    const pack = downloads[name];
     pack.lastAccess = lastAccess;
     
-    if (pack[version] === undefined) pack[version] = { downloads: 1, lastAccess:lastAccess };
+    if(pack.versions === undefined) pack.versions = {};
+    const versions = pack.versions;
+    
+    if (versions[version] === undefined) versions[version] = { downloads: 1, lastAccess:lastAccess };
     else {
-      const ver = pack[version];
+      const ver = versions[version];
       ver.downloads += 1;
       ver.lastAccess = lastAccess;
     }
@@ -65,7 +78,7 @@
       }
     }
 
-    db[name] = pack;
+    downloads[name] = pack;
     save();
   };
 
