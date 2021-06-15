@@ -7,16 +7,22 @@
     load();
 
     app.get("/private/magick/stats", (request, response) => {
-      module.exports.register({ packageName: "com.needle.test" });
+      console.log(request);
+      module.exports.register({ name: "com.needle.test", version: "1.0.0" });
       response.json(db);
     });
   };
 
   module.exports.register = function(data) {
-    const { packageName } = data;
-    if (packageName === undefined) return;
-    if (db[packageName] === undefined) db[packageName] = { downloads: 1 };
-    else db[packageName].downloads += 1;
+    if(data === undefined) return;
+    const { name, version } = data;
+    if (name === undefined || version === undefined) return;
+    if (db[name] === undefined) db[name] = { downloads: 1 };
+    else db[name].downloads += 1;
+    const pack = db[name];
+    if(pack[version] === undefined) pack[version] = { downloads: 1};
+    else pack[version].downloads += 1;
+    db[name] = pack;
     save();
   };
 
