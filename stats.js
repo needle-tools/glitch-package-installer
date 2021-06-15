@@ -16,7 +16,7 @@
 
   module.exports.register = function(data) {
     if (data === undefined) return;
-    const { name, version, sourceUrl } = data;
+    const { name, version } = data;
     if (name === undefined || version === undefined) return;
     if (db[name] === undefined) db[name] = { downloads: 1 };
     else db[name].downloads += 1;
@@ -25,13 +25,19 @@
     if (pack[version] === undefined) pack[version] = { downloads: 1 };
     else pack[version].downloads += 1;
 
-    if (pack.apis === undefined) pack.apis = {};
-    if (pack.apis[sourceUrl] === undefined) {
-      pack.apis[sourceUrl] = { downloads: 1 };
-    } else pack.apis[sourceUrl].downloads += 1;
-
     const req = data.request;
     if (req !== undefined) {
+      
+      console.log(req);
+      console.log(req.path);
+      console.log(req.headers.referer);
+      
+      const api = req.originalUrl;
+      if (pack.apis === undefined) pack.apis = {};
+      if (pack.apis[api] === undefined) {
+        pack.apis[api] = { downloads: 1 };
+      } else pack.apis[api].downloads += 1;
+
       const source = req.headers.referer;
       if (source !== undefined) {
         if (pack.sources === undefined) pack.sources = {};
