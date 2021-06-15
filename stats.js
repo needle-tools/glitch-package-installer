@@ -4,11 +4,12 @@
   let db = {};
 
   module.exports.setupApp = function(app) {
+    // uncomment to clear all, beware
     //save();
+    
     load();
 
     app.get("/private/magick/stats", (request, response) => {
-      console.log(request.originalUrl);
       //module.exports.register({ name: "com.needle.test", version: "1.0.0" });
       response.json(db);
     });
@@ -21,16 +22,29 @@
     if (db[name] === undefined) db[name] = { downloads: 1 };
     else db[name].downloads += 1;
 
+    const lastAccess = new Date().toUTCString();
+    
     const pack = db[name];
-    if (pack[version] === undefined) pack[version] = { downloads: 1 };
-    else pack[version].downloads += 1;
+    pack.lastAccess = lastAccess;
+    
+    if (pack[version] === undefined) pack[version] = { downloads: 1, lastAccess:lastAccess };
+    else {
+      const ver = pack[version];
+      ver.downloads += 1;
+      ver.lastAccess = lastAccess;
+    }
+    
 
     const req = data.request;
     if (req !== undefined) {
+
       
+      /*
       console.log(req);
       console.log(req.path);
       console.log(req.headers.referer);
+      console.log(req.headers.origin);
+      */
       
       const api = req.originalUrl;
       if (pack.apis === undefined) pack.apis = {};
@@ -42,8 +56,12 @@
       if (source !== undefined) {
         if (pack.sources === undefined) pack.sources = {};
         if (pack.sources[source] === undefined) {
-          pack.sources[source] = { downloads: 1 };
-        } else pack.sources[source].downloads += 1;
+          pack.sources[source] = { downloads: 1, lastAccess:lastAccess };
+        } else {
+          const src = pack.sources[source];
+          src.downloads += 1;
+          src.lastAccess = lastAccess;
+        }
       }
     }
 
