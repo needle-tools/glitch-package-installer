@@ -25,10 +25,21 @@
     if (pack[version] === undefined) pack[version] = { downloads: 1 };
     else pack[version].downloads += 1;
 
-    if (pack.sources === undefined) pack.sources = {};
-    if (pack.sources[sourceUrl] === undefined) {
-      pack.sources[sourceUrl] = { downloads: 1 };
-    } else pack.sources[sourceUrl].downloads += 1;
+    if (pack.apis === undefined) pack.apis = {};
+    if (pack.apis[sourceUrl] === undefined) {
+      pack.apis[sourceUrl] = { downloads: 1 };
+    } else pack.apis[sourceUrl].downloads += 1;
+
+    const req = data.request;
+    if (req !== undefined) {
+      const source = req.headers.referer;
+      if (source !== undefined) {
+        if (pack.sources === undefined) pack.sources = {};
+        if (pack.sources[source] === undefined) {
+          pack.sources[source] = { downloads: 1 };
+        } else pack.sources[source].downloads += 1;
+      }
+    }
 
     db[name] = pack;
     save();

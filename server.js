@@ -292,7 +292,7 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   // pack into a .tar.gz again
   let compressPath = await compressPromise(tmpPath, tmpFile);  
   
-  stats.register({name:packageName, version:packageVersion, sourceUrl:request.originalUrl})
+  stats.register({name:packageName, version:packageVersion, sourceUrl:request.originalUrl, request:request})
   
   // serve as .unitypackage with a nice name related to the package name and version.
   response.download(compressPath, "Install-" + packageName + "-" + packageVersion + ".unitypackage");
