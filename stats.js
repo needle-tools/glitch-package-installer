@@ -59,11 +59,15 @@
       console.log(req.headers.origin);
       */
       
-      const api = req.originalUrl;
+      const apiUrl = req.originalUrl;
       if (pack.apis === undefined) pack.apis = {};
-      if (pack.apis[api] === undefined) {
-        pack.apis[api] = { downloads: 1 };
-      } else pack.apis[api].downloads += 1;
+      if (pack.apis[apiUrl] === undefined) {
+        pack.apis[apiUrl] = { downloads: 1, lastAccess:lastAccess };
+      } else {
+        const api = pack.apis[apiUrl];
+        api.downloads += 1;
+        api.lastAccess = lastAccess;
+      }
 
       const source = req.headers.referer;
       if (source !== undefined) {
