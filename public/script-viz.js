@@ -40,6 +40,7 @@ function drawDualY(jsonData) {
             MotivationLevel: {label: 'Downloads'},
           }
         },
+         hAxis: {title: "Packages" , slantedText:true, slantedTextAngle:90 },
       };
 
       var materialChart = new google.charts.Bar(document.getElementById('chart_div'));

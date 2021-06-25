@@ -7,6 +7,7 @@
     // uncomment to clear all, beware
     //save();
     
+    /*
     // https://www.npmjs.com/package/cors#configuring-cors-w-dynamic-origin
     const cors = require("cors");
     const whitelist = [
@@ -26,6 +27,7 @@
       credentials: true
     };
     app.use(cors(corsOptions));
+    */
     
     load();
     
@@ -41,6 +43,10 @@
     // https://hashgenerator.de/
     app.get("/public/stats/098f6bcd4621d373cade4e832627b4f6", (request, response) => {
       getStats(response);
+    });
+    
+    app.get("/public/stats/098f6bcd4621d373cade4e832627b4f6/viz", (request, response) => {
+      response.sendFile(__dirname + "/views/viz.html");
     });
   };
 

@@ -28,6 +28,9 @@ app.get("/", (request, response) => {
 });
  
 
+// https://expressjs.com/en/starter/basic-routing.html
+
+
 function getDirectories(path) {
   return fs.readdirSync(path).filter(function (file) {
     return fs.statSync(path+'/'+file).isDirectory();
