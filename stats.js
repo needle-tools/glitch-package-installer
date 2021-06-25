@@ -7,6 +7,26 @@
     // uncomment to clear all, beware
     //save();
     
+    // https://www.npmjs.com/package/cors#configuring-cors-w-dynamic-origin
+    const cors = require("cors");
+    const whitelist = [
+      "https://fiddle.jshell.net"
+    ];
+
+    const corsOptions = {
+      origin: function(origin, callback) {
+        // console.log(origin);
+        if (origin === undefined || whitelist.indexOf(origin) !== -1) {
+          callback(null, true);
+        } else {
+          callback(new Error(origin + ": not allowed by CORS"));
+        }
+      },
+      optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204,
+      credentials: true
+    };
+    app.use(cors(corsOptions));
+    
     load();
     
     const getStats = function(response){
