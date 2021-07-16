@@ -50,8 +50,21 @@ function drawDualY(jsonData) {
 
 function drawText(jsonData) {
   let elem = document.getElementById('chart_text');
-  for(let key in jsonData) {
-    let newElem = document.createTextNode(key + ": " + jsonData[key].downloads);
-    elem.appendChild(newElem);
+  
+    var arr = new Array();
+    let i = 0;
+    for(let key in jsonData) {
+      arr.push({key: key, downloads: jsonData[key].downloads});
+    }
+  
+  arr.sort((a,b) => a.downloads < b.downloads ? 1 : -1);
+  
+  let list = document.createElement('ol');
+  for(let key in arr) {
+    
+    let newElem = document.createElement('li');
+    newElem.appendChild(document.createTextNode(arr[key].key + ": " + arr[key].downloads));
+    list.appendChild(newElem);
   }
+  elem.appendChild(list);
 }
