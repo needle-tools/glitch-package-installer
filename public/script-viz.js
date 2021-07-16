@@ -6,6 +6,7 @@ function fetchAndDraw() {
   .then(data => data.json())
   .then(data => {
     drawDualY(data.downloads);
+    drawText(data.downloads);
   });
 }
 
@@ -46,3 +47,11 @@ function drawDualY(jsonData) {
       var materialChart = new google.charts.Bar(document.getElementById('chart_div'));
       materialChart.draw(data, options);
     }
+
+function drawText(jsonData) {
+  let elem = document.getElementById('chart_text');
+  for(let key in jsonData) {
+    let newElem = document.createTextNode(key + ": " + jsonData[key].downloads);
+    elem.appendChild(newElem);
+  }
+}
