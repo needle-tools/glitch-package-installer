@@ -198,7 +198,7 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   registryUrl = registryUrl.replace(/(\r\n|\n|\r)/gm,"");
   
   // try to download package details from registry; check if the package even exists before creating an installer for it.
-  let existanceResult = await checkPackageExistance(registryUrl + "/" + packageName + "/" + packageVersion);
+  let existanceResult = await checkPackageExistance(registryUrl + "/" + packageName); //  + "/" + packageVersion
   console.log("version check result: " + existanceResult);
   
   if(typeof existanceResult.error !== 'undefined') {
