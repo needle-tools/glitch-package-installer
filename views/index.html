@@ -40,7 +40,7 @@
     Minimal example – latest version, automatic scope
   </h3>
   <p>
-    If you omit the version, the latest available will be used. If you omit the scope, the package name and dependencies will be used as scopes automatically.
+    If you omit the version, the latest available will be used on installation. If you omit the scope, the package name and dependencies will be used as scopes automatically.
   </p>
     <p>
   <a href="./v1/installer/OpenUPM/com.littlebigfun.addressable-importer@0.9.1?registry=https://package.openupm.com&scope=com.littlebigfun">
@@ -85,6 +85,25 @@
   </p>
   <p>
     <a href="./v1/installer/OpenUPM/elzach.leveleditor?registry=https://package.openupm.com">
+      Download Installer for <b>ElZach LevelEditor</b>
+    </a>
+    <br/>
+    <a href="https://package.openupm.com/elzach.leveleditor/latest">Link to package on registry</a>
+  </p>
+      <pre class="docs">http://package-installer.glitch.me/v1/installer/ <span>api base</span>
+  OpenUPM/ <span>registry name</span>
+    elzach.leveleditor <span>package name</span>
+      ?registry=https://package.openupm.com <span>registry url</span>
+      </pre>
+    
+    <h3>
+      Install package and use a custom set of scopes
+    </h3>
+    <p>
+      If you specify the scope= parameter, dependencies won't be fetched. To still include multiple scopes, you can use the scope parameter multiple times.
+  </p>
+  <p>
+    <a href="./v1/installer/OpenUPM/elzach.leveleditor?registry=https://package.openupm.com&">
       Download Installer for <b>ElZach LevelEditor</b>
     </a>
     <br/>

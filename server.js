@@ -225,16 +225,26 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   // as it would result in dependencies (probably) working.
   if(typeof registryScope === 'undefined' || registryScope == "") {
     registryScope = [ packageName ];
-    console.log(registryScope, existanceResult);
-    if(typeof existanceResult.dependencies !== 'undefined') {
+    let dependencies = existanceResult.dependencies;
+    if(typeof dependencies == 'undefined' && existanceResult.versions) {
+      var keys = Object.keys(existanceResult.versions);
+      var last = keys[keys.length - 1];
+      var lastVersion = existanceResult.versions[last];
+      // console.log(lastVersion.version, lastVersion.dependencies);
+      dependencies = lastVersion.dependencies;
+    }
+    
+    if(typeof dependencies !== 'undefined') {
       // filter out only the ones that are NOT from unity
-      console.log(existanceResult.dependencies);
-      for(var dep in existanceResult.dependencies) {
+      for(var dep in dependencies) {
         if(!dep.startsWith("com.unity"))
           registryScope.push(dep);
       }
+      console.log("used dependency scope: " + registryScope);
     }
-    console.log("used fallback scope: " + registryScope)
+    else {
+      console.log("used fallback scope: " + registryScope)
+    }
   }
   
   // input file - this needs to be updated via Git import
