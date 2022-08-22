@@ -20,8 +20,11 @@ function drawDualY(jsonData) {
 
 			var arr = new Array();
       let i = 0;
+      let totalDownloads = 0;
       for(let key in jsonData) {
-      	arr.push([key, jsonData[key].downloads]);
+        let dl = jsonData[key].downloads;
+      	arr.push([key, dl]);
+        totalDownloads += dl;
       }
 
 			console.log(arr);
@@ -31,7 +34,7 @@ function drawDualY(jsonData) {
       var options = {
         chart: {
           title: 'Package Downloads via Installer',
-          subtitle: 'via https://package-installer.glitch.me/'
+          subtitle: 'via https://package-installer.glitch.me/ – Download Count: ' + totalDownloads,
         },
         series: {
           0: {axis: 'MotivationLevel'},
