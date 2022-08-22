@@ -199,7 +199,7 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   
   // try to download package details from registry; check if the package even exists before creating an installer for it.
   let existanceResult = await checkPackageExistance(registryUrl + "/" + packageName); //  + "/" + packageVersion 
-  console.log("version check result: " + existanceResult);
+  // console.log("version check result: ", existanceResult);
   
   if(typeof existanceResult.error !== 'undefined') {
     // TODO we probably want to allow creating installers for packages that need auth.
@@ -212,7 +212,7 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   
   // if we got here, the package exists, is accessible, and ready to be downloaded
   // let's use the correct latest version if none was specified
-  console.log("Package has version online: " + existanceResult.version);
+  // console.log("Package has version online: ", existanceResult.version);
   if(!semver.valid(packageVersion) && semver.valid(existanceResult.version))
     packageVersion = existanceResult.version;
   
@@ -225,6 +225,7 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   // as it would result in dependencies (probably) working.
   if(typeof registryScope === 'undefined' || registryScope == "") {
     registryScope = [ packageName ];
+    console.log(registryScope, existanceResult);
     if(typeof existanceResult.dependencies !== 'undefined') {
       // filter out only the ones that are NOT from unity
       console.log(existanceResult.dependencies);
