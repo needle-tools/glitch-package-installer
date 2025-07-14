@@ -1,5 +1,10 @@
 /* this file is loaded by index.html and styles the page */
 
+:root {
+  --primary-color: #71a110;
+  --secondary-color: #bbbbf2;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -11,8 +16,7 @@ body {
 }
 
 h1 {
-  font-style: italic;
-  color: #373fff;
+  color: var(--primary-color);
   max-width: calc(100% - 5rem);
   line-height: 1.1;
 }
@@ -35,7 +39,7 @@ input {
 }
 
 form button {
-  background-color: #bbbbf2;
+  background-color: var(--secondary-color);
   border: 2px solid currentColor;
   border-radius: .25em;
   cursor: pointer;
@@ -63,4 +67,8 @@ pre.docs span {
 
 pre.docs span::before {
   content: "← ";
+}
+
+.logo {
+  height: 3em;
 }
