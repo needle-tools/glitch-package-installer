@@ -313,6 +313,7 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
 });
 
 // listen for requests :)
-const listener = app.listen(process.env.PORT, () => {
+const port = process.env.PORT || 3017;
+const listener = app.listen(port, () => {
   console.log("Your app is listening on port " + listener.address().port);
 });

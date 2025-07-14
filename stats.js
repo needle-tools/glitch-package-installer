@@ -137,9 +137,11 @@
     });
   };
 
-  const save = () =>
-    fs.writeFile(dbPath, JSON.stringify(db), err => {
-      if (err) throw err;
-      console.log("Saved stats");
-    });
+  const save = () => {
+    // ensure folder exists
+    console.log("Saving stats to", dbPath);
+    fs.mkdirSync(".data", { recursive: true });
+    fs.writeFileSync(dbPath, JSON.stringify(db));
+    console.log("Saved stats");
+  };
 })();
