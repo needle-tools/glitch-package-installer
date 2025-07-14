@@ -20,9 +20,6 @@
     "node-fetch": "^2.6.0",
     "cors": "^2.8.5"
   },
-  "engines": {
-    "node": "12.x"
-  },
   "repository": {
     "url": "https://glitch.com/edit/#!/package-installer"
   },
