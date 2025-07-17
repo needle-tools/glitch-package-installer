@@ -9,7 +9,7 @@ At some point this will hopefully become redundant...
 # How to use
 
 Minimalistic docs / API base / tests: 
-<b>[package-installer.glitch.me](https://package-installer.glitch.me/)</b>
+<b>[package-installer.needle.tools](https://package-installer.needle.tools/)</b>
 
 Report bugs, please: 
 [GitHub Issues](https://github.com/needle-tools/glitch-package-installer/issues)
