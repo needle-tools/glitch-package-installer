@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"window.title": "Needle Installer",
+		"js/ts.implicitProjectConfig.checkJs": true
+	}
+}

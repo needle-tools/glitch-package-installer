@@ -180,28 +180,51 @@ function checkPackageExistance(url) {
 // https://stackoverflow.com/questions/41941724/nodejs-sendfile-with-file-name-in-download
 // send the .unitypackage back
 // https://techeplanet.com/express-path-parameter/
-app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next) => {
+app.get("/v1/installer/:registry/:nameAtVersion", /** @returns {Promise<any>} */ async (request, response, next) => {
 
   console.log(request.query.scope + " - " + request.params.nameAtVersion);
   console.log(request.query.registry);
   
-  let registryName = request.params.registry;
+  const registryName = request.params.registry;
   
-  let nameVersion = splitNameAndVersion(request.params.nameAtVersion);
-  if(!nameVersion)
-    response.status(500).send({ error: 'Please use the format com.my.package@1.0.0 with a valid semver.' });
+  const nameVersion = splitNameAndVersion(request.params.nameAtVersion);
+  if(!nameVersion) {
+    sendAnalyticsEvent({
+      request: request,
+      name: "error",
+      props: {
+        packageName: request.params.nameAtVersion,
+        packageVersion: "",
+        registryName: registryName,
+        registryUrl: request.query.registry?.toString() || "no-registry",
+        error: 'Please use the format com.my.package@1.0.0 with a valid semver.'
+      }
+    });
+    return response.status(500).send({ error: 'Please use the format com.my.package@1.0.0 with a valid semver.' });
+  }
   
   let packageName = nameVersion.name;
   let packageVersion = nameVersion.version;
   
-  let registryUrl = request.query.registry;
-  registryUrl = registryUrl.replace(/(\r\n|\n|\r)/gm,"");
+  let registryUrl = request.query.registry?.toString();
+  if(typeof registryUrl === "string") registryUrl = registryUrl.replace(/(\r\n|\n|\r)/gm,"");
   
   // try to download package details from registry; check if the package even exists before creating an installer for it.
   let existanceResult = await checkPackageExistance(registryUrl + "/" + packageName); //  + "/" + packageVersion 
   // console.log("version check result: ", existanceResult);
   
   if(typeof existanceResult.error !== 'undefined') {
+    sendAnalyticsEvent({
+      request: request,
+      name: "error",
+      props: {
+        packageName: packageName,
+        packageVersion: packageVersion,
+        registryName: registryName,
+        registryUrl: registryUrl?.toString() || "no-registry",
+        error: existanceResult.error.toString(),
+      }
+    })
     // TODO we probably want to allow creating installers for packages that need auth.
     // Someone using the installer might have auth in place.
     
@@ -218,7 +241,7 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   
   
   let registryScope = request.query.scope;
-  if(!Array.isArray(registryScope)) registryScope = [ registryScope ];
+  if(!Array.isArray(registryScope)) registryScope = [ /**@type {string}*/(registryScope) ];
   
   // if scope is not defined we fall back to package name as scope.
   // TODO could add a better heuristic here to walk the scope, avoid collisions with unity scopes, and use that instead
@@ -282,8 +305,8 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   let some_lines = split_lines.slice(3);  
   let startWithBrokenYamlTag = split_lines.slice(0, 3).join("\n");
   
-  let yamlData = yaml.load(some_lines.join("\n"));
-  
+  const yamlData = yaml.load(some_lines.join("\n"));
+
   yamlData["MonoBehaviour"]["registries"] = [{
     name: registryName,
     url: registryUrl,
@@ -310,6 +333,18 @@ app.get("/v1/installer/:registry/:nameAtVersion", async (request, response, next
   
   // serve as .unitypackage with a nice name related to the package name and version.
   response.download(compressPath, "Install-" + packageName + "-" + packageVersion + ".unitypackage");
+
+  sendAnalyticsEvent({
+    request: request,
+    name: "download",
+    props: {
+      packageName: packageName,
+      packageVersion: packageVersion,
+      registryName: registryName,
+      registryUrl: registryUrl?.toString() || "no-registry",
+      scope: Array.isArray(registryScope) ? registryScope.join(",") : registryScope
+    }
+  })
 });
 
 // listen for requests :)
@@ -317,3 +352,47 @@ const port = process.env.PORT || 3017;
 const listener = app.listen(port, () => {
   console.log("Your app is listening on port " + listener.address().port);
 });
+
+
+/**
+ * Get the IP address of the request.
+ * @param {Object} request - The HTTP request object.
+ */
+function getIpAddress(request) {
+  return request.headers['cf-connecting-ip'] || 
+         (request.headers['x-forwarded-for'] && request.headers['x-forwarded-for'].split(',')[0].trim()) ||
+         request.headers['x-real-ip'] ||
+         request.connection.remoteAddress ||
+         request.socket.remoteAddress ||
+         request.ip;
+}
+
+
+/**
+ * Send an analytics event.
+ * @param {{request:import("express").Request, name:string, props:Record<string, string>}} args - The arguments for the event.
+ */
+function sendAnalyticsEvent(args) {
+
+  const ipAddress = getIpAddress(args.request);
+
+  const url = "https://analytics.needle.tools/api/event";
+  console.log("Sending analytics event to " + url + " for " + args.request.originalUrl);
+  return fetch(url, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+      "X-Forwarded-For": ipAddress,
+      "User-Agent": args.request.headers['user-agent'] || "unknown",
+    },
+    body: JSON.stringify({
+      domain: "package-installer.needle.tools",
+      name: args.name,
+      url: args.request.originalUrl,
+      referrer: args.request.headers.referer || "",
+      props: {
+        ...args.props,
+      }
+    })
+  });
+}
