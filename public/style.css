@@ -21,6 +21,14 @@ h1 {
   line-height: 1.1;
 }
 
+hr {
+  border: none;
+  border-bottom: 2px solid rgba(100, 100, 100, .3);
+  max-width: 50ch;
+  margin: 2rem;
+  margin-left: 0;
+}
+
 form {
   background-color: #eee;
   display: grid;
@@ -71,4 +79,67 @@ pre.docs span::before {
 
 .logo {
   height: 3em;
+}
+
+/* Package Form Styles */
+.package-form-container {
+  margin: 2em 0;
+}
+
+.package-form-container h3 {
+  color: var(--primary-color);
+  margin-bottom: 0.5em;
+}
+
+.package-form-container span {
+  display: block;
+  color: #666;
+  font-style: italic;
+  margin-bottom: 1.5em;
+}
+
+.package-form-container form {
+  max-width: 800px;
+  width: 100%;
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.package-form-container .form-group {
+  margin-bottom: 1em;
+}
+
+.package-form-container .form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+#finalUrl {
+  font-family: monospace;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  border: 2px dashed #ccc;
+  resize: none;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  color: #333;
+}
+
+.package-form-container .form-group:last-child {
+  display: block;
+}
+
+.package-form-container .form-group:last-child button {
+  margin: 0;
+  white-space: nowrap;
+}
+
+#copyUrl:disabled {
+  background-color: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+  border-color: #ccc;
 }

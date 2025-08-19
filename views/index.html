@@ -36,6 +36,76 @@
     <p>
       <a href="https://github.com/needle-tools/glitch-package-installer/issues">Please report any issues on GitHub ↗</a>
     </p>
+    <div class="package-form-container">
+      <h3>URL Generator</h3>
+      <span>
+        Use the form below to generate a URL for a package installer to install your package. Alternatively see 'Basic API' below for the API format.<br/>
+      </span>
+      <form id="packageForm">
+        <div class="form-group">
+          <label for="packageName">Package Name:</label>
+          <input type="text" id="packageName" name="packageName" placeholder="Your package name, e.g. com.needle.shadergraph-markdown" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="registry">Registry URL:</label>
+          <input type="url" id="registry" name="registry" value="https://package.openupm.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="version">Package Version (optional):</label>
+          <input type="text" id="version" name="version" placeholder="e.g., 1.0.0">
+        </div>
+        
+        <div class="form-group">
+          <label for="finalUrl">Generated URL:</label>
+          <textarea id="finalUrl" readonly rows="3"></textarea>
+          <button type="button" id="copyUrl" disabled>Copy URL</button>
+        </div>
+      </form>
+    </div>
+
+
+    <script>
+      function updateUrl() {
+        const packageName = document.getElementById('packageName').value;
+        const registry = document.getElementById('registry').value;
+        const version = document.getElementById('version').value;
+        
+        if (packageName && registry) {
+          const url = new URL(registry);
+          const registryName = url.hostname.replace(/^(package\.|packages\.)/, '').replace(/\.com$/, '');
+          const capitalizedRegistry = registryName.charAt(0).toUpperCase() + registryName.slice(1);
+          
+          let finalUrl = `http://package-installer.needle.tools/v1/installer/${capitalizedRegistry}/${packageName}`;
+          if (version) {
+            finalUrl += `@${version}`;
+          }
+          finalUrl += `?registry=${registry}`;
+          
+          document.getElementById('finalUrl').value = finalUrl;
+          document.getElementById('copyUrl').disabled = false;
+        } else {
+          document.getElementById('finalUrl').value = '';
+          document.getElementById('copyUrl').disabled = true;
+        }
+      }
+      
+      document.getElementById('packageName').addEventListener('input', updateUrl);
+      document.getElementById('registry').addEventListener('input', updateUrl);
+      document.getElementById('version').addEventListener('input', updateUrl);
+      
+      document.getElementById('copyUrl').addEventListener('click', function() {
+        const finalUrl = document.getElementById('finalUrl');
+        finalUrl.select();
+        document.execCommand('copy');
+      });
+      
+      // Initialize on load
+      updateUrl();
+    </script>
+
+    <hr/>
     <h3>
     Basic API
     </h3>
