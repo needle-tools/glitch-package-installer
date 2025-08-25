@@ -2,191 +2,277 @@
 <!-- served from your routes in server.js -->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="An easy way to install Unity Packages from scoped registries">
 
-    <title>🌵 needle — Package Installers</title>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An easy way to install Unity Packages from scoped registries">
 
-    <link id="favicon" rel="icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/style.css">
-    <script defer file-types="unitypackage" data-domain="package-installer.needle.tools" src="https://analytics.needle.tools/js/script.file-downloads.outbound-links.js"></script>
-    <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
-  </head>
-  <body>
-    <a href="https://needle.tools">
-      <img src="./needle-logo-black.svg" alt="Needle Logo" class="logo">
-    </a>
-    <h1>
-      CREATE UNITY PACKAGE INSTALLERS
-    </h1>
-    
-    <h3>What's this?</h3>
-    <p>
-      This simple API creates a <a href="https://docs.unity3d.com/Manual/AssetPackages.html">.unitypackage</a> that will install a <a href="https://docs.unity3d.com/Manual/Packages.html">Unity Package Manager package</a> into your Unity project.<br/>
-      It will add the required scopes, automatically fetch the latest available version on installation, and remove itself after installation.<br/>
-      You can simply drop such a .unitypackage into Unity and click "import".<br/><br/>
-      This reduces the friction of using custom registries considerably.<br/><strong>Around 500.000 package installations have been made easier using this service already.</strong>
-    </p>
-      <p>
-        If this sounds kinda complicated, well, yes. The only reason this is required is because Unity is treating packages with a love/hate relationship currently; all of this could be much, much easier. See <a href="#what-unity-could-do">What Unity Could Do</a>, especially if you're a Unity person.<br/>
-    </p>
-    <div class="package-form-container">
-      <h3>URL Generator</h3>
-      <span>
-        Use the form below to generate a URL for a package installer to install your package. Alternatively see 'Basic API' below for the API format.<br/>
-      </span>
-      <form id="packageForm">
-        <div class="form-group">
-          <label for="packageName">Package Name:</label>
-          <input type="text" id="packageName" name="packageName" placeholder="Package name (e.g. com.needle.shadergraph-markdown) or URL from packages.needle.tools or openupm.com" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="registry">Registry URL:</label>
-          <input type="url" id="registry" name="registry" value="https://package.openupm.com" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="version">Package Version (optional):</label>
-          <input type="text" id="version" name="version" placeholder="e.g., 1.0.0">
-        </div>
-        
-        <div class="form-group">
-          <label for="finalUrl">Generated URL:</label>
-          <textarea id="finalUrl" readonly rows="3"></textarea>
+  <title>🌵 needle — Package Installer</title>
+
+  <link id="favicon" rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/style.css">
+  <script defer file-types="unitypackage" data-domain="package-installer.needle.tools"
+    src="https://analytics.needle.tools/js/script.file-downloads.outbound-links.js"></script>
+  <script>window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+</head>
+
+<body>
+  <a href="https://needle.tools">
+    <img src="./needle-logo-black.svg" alt="Needle Logo" class="logo">
+  </a>
+  <h1>
+    CREATE UNITY PACKAGE INSTALLERS
+  </h1>
+
+  <h2>What's this?</h2>
+  <p>
+    This simple API creates a <a href="https://docs.unity3d.com/Manual/AssetPackages.html">.unitypackage</a> that will
+    install a <a href="https://docs.unity3d.com/Manual/Packages.html">Unity Package Manager package</a> into your Unity
+    project.<br />
+    It will add the required scopes, automatically fetch the latest available version on installation, and remove itself
+    after installation.<br />
+    You can simply drop such a .unitypackage into Unity and click "import".<br /><br />
+    This reduces the friction of using custom registries considerably.<br /><strong>Around 500.000 package installations
+      have been made easier using this service already.</strong>
+  </p>
+  <p>
+    If this sounds kinda complicated, well, yes. The only reason this is required is because Unity is treating packages
+    with a love/hate relationship currently; all of this could be much, much easier. See <a
+      href="#what-unity-could-do">What Unity Could Do</a>, especially if you're a Unity person.<br />
+  </p>
+  <div class="package-form-container" id="url-generator-section">
+    <h2>URL Generator</h2>
+    <span>
+      Use the form below to generate a URL for a package installer to install your package. For more info, see 'Basic
+      API' below for the API format.<br />
+    </span>
+    <form id="packageForm">
+      <div class="form-group">
+        <label for="packageName">Package Name</label>
+        <input type="text" id="packageName" name="packageName"
+          placeholder="Package name (e.g. com.needle.shadergraph-markdown) or URL from packages.needle.tools or openupm.com"
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="registry">Package Registry URL</label>
+        <input type="url" id="registry" name="registry" value="https://package.openupm.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="version">Package Version</label>
+        <input type="text" id="version" name="version"
+          placeholder="Leave empty to use latest. Otherwise, enter the version number like 1.0.0.">
+      </div>
+
+      <div class="form-group">
+        <label for="finalUrl">Package Installer URL</label>
+        <textarea id="finalUrl" readonly rows="3"></textarea>
+        <div class="actions">
           <button type="button" id="copyUrl" disabled>Copy URL</button>
+          <a href="#" id="downloadNow" class="btn disabled" aria-disabled="true">Download Installer</a>
         </div>
-      </form>
-    </div>
-    <p>
-      <a href="https://github.com/needle-tools/glitch-package-installer/issues">Please report any issues on GitHub ↗</a>
-    </p>
+      </div>
+    </form>
+  </div>
+  <p>
+    <a href="https://github.com/needle-tools/glitch-package-installer/issues">Please report any issues on GitHub ↗</a>
+    <br>
+    <em>Note: Chrome might detect the download as insecure, because the .unitypackage format is essentially a renamed ZIP file.</em>
+  </p>
 
 
-    <script>
-      function parsePackageFromUrl(urlString) {
-        try {
-          // Handle Needle Tools URLs: https://packages.needle.tools/-/web/detail/PACKAGE_NAME
-          if (urlString.includes('packages.needle.tools/-/web/detail/')) {
-            const match = urlString.match(/packages\.needle\.tools\/-\/web\/detail\/([^/?]+)/);
-            if (match) {
-              return {
-                packageName: match[1],
-                registry: 'https://packages.needle.tools'
-              };
-            }
+  <script type="module">
+    function parsePackageFromUrl(urlString) {
+      try {
+        // Handle Needle Tools URLs: https://packages.needle.tools/-/web/detail/PACKAGE_NAME
+        if (urlString.includes('packages.needle.tools/-/web/detail/')) {
+          const match = urlString.match(/packages\.needle\.tools\/-\/web\/detail\/([^/?]+)/);
+          if (match) {
+            return {
+              packageName: match[1],
+              registry: 'https://packages.needle.tools'
+            };
           }
-          
-          // Handle OpenUPM URLs: https://openupm.com/packages/PACKAGE_NAME/
-          if (urlString.includes('openupm.com/packages/')) {
-            const match = urlString.match(/openupm\.com\/packages\/([^/?]+)/);
-            if (match) {
-              return {
-                packageName: match[1],
-                registry: 'https://package.openupm.com'
-              };
-            }
-          }
-          
-          return null;
-        } catch (e) {
-          return null;
         }
+
+        // Handle OpenUPM URLs: https://openupm.com/packages/PACKAGE_NAME/
+        if (urlString.includes('openupm.com/packages/')) {
+          const match = urlString.match(/openupm\.com\/packages\/([^/?]+)/);
+          if (match) {
+            return {
+              packageName: match[1],
+              registry: 'https://package.openupm.com'
+            };
+          }
+        }
+
+        return null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function updateUrl() {
+      const packageName = document.getElementById('packageName').value;
+      const registry = document.getElementById('registry').value;
+      const version = document.getElementById('version').value;
+
+      if (packageName && registry) {
+        const url = new URL(registry);
+        const registryName = url.hostname.replace(/^(package\.|packages\.)/, '').replace(/\.com$/, '');
+        const capitalizedRegistry = registryName.charAt(0).toUpperCase() + registryName.slice(1);
+
+        let finalUrl = `http://package-installer.needle.tools/v1/installer/${capitalizedRegistry}/${packageName}`;
+        if (version) {
+          finalUrl += `@${version}`;
+        }
+        finalUrl += `?registry=${registry}`;
+
+        document.getElementById('finalUrl').value = finalUrl;
+        document.getElementById('copyUrl').disabled = false;
+        // Update download link
+        const dl = document.getElementById('downloadNow');
+        dl.href = finalUrl;
+        dl.classList.remove('disabled');
+        dl.setAttribute('aria-disabled', 'false');
+        dl.removeAttribute('tabindex');
+      } else {
+        document.getElementById('finalUrl').value = '';
+        document.getElementById('copyUrl').disabled = true;
+        // Disable download link
+        const dl = document.getElementById('downloadNow');
+        dl.href = '#';
+        dl.classList.add('disabled');
+        dl.setAttribute('aria-disabled', 'true');
+        dl.setAttribute('tabindex', '-1');
+      }
+    }
+
+    document.getElementById('packageName').addEventListener('input', function () {
+      const input = this.value.trim();
+      const parsedData = parsePackageFromUrl(input);
+
+      if (parsedData) {
+        // If it's a URL that we can parse, extract the package name and set registry
+        this.value = parsedData.packageName;
+        document.getElementById('registry').value = parsedData.registry;
       }
 
-      function updateUrl() {
-        const packageName = document.getElementById('packageName').value;
-        const registry = document.getElementById('registry').value;
-        const version = document.getElementById('version').value;
-        
-        if (packageName && registry) {
-          const url = new URL(registry);
-          const registryName = url.hostname.replace(/^(package\.|packages\.)/, '').replace(/\.com$/, '');
-          const capitalizedRegistry = registryName.charAt(0).toUpperCase() + registryName.slice(1);
-          
-          let finalUrl = `http://package-installer.needle.tools/v1/installer/${capitalizedRegistry}/${packageName}`;
-          if (version) {
-            finalUrl += `@${version}`;
-          }
-          finalUrl += `?registry=${registry}`;
-          
-          document.getElementById('finalUrl').value = finalUrl;
-          document.getElementById('copyUrl').disabled = false;
-        } else {
-          document.getElementById('finalUrl').value = '';
-          document.getElementById('copyUrl').disabled = true;
-        }
-      }
-      
-      document.getElementById('packageName').addEventListener('input', function() {
-        const input = this.value.trim();
-        const parsedData = parsePackageFromUrl(input);
-        
-        if (parsedData) {
-          // If it's a URL that we can parse, extract the package name and set registry
-          this.value = parsedData.packageName;
-          document.getElementById('registry').value = parsedData.registry;
-        }
-        
-        updateUrl();
-      });
-      document.getElementById('registry').addEventListener('input', updateUrl);
-      document.getElementById('version').addEventListener('input', updateUrl);
-      
-      document.getElementById('copyUrl').addEventListener('click', function() {
-        const finalUrl = document.getElementById('finalUrl');
-        finalUrl.select();
-        document.execCommand('copy');
-      });
-      
-      // Initialize on load
       updateUrl();
-    </script>
+    });
+    document.getElementById('registry').addEventListener('input', updateUrl);
+    document.getElementById('version').addEventListener('input', updateUrl);
 
-    <br/>
-    <h2>
+    document.getElementById('copyUrl').addEventListener('click', function () {
+      const finalUrl = document.getElementById('finalUrl').value;
+      if (navigator.clipboard && finalUrl) {
+        navigator.clipboard.writeText(finalUrl);
+      } else {
+        const ta = document.getElementById('finalUrl');
+        ta.select();
+        document.execCommand('copy');
+      }
+    });
+
+    // Prevent click when "disabled"
+    document.getElementById('downloadNow').addEventListener('click', function (e) {
+      if (this.classList.contains('disabled')) {
+        e.preventDefault();
+      }
+    });
+
+    // Add header anchor links that copy section URL on click
+    function slugify(text) {
+      return text
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+    }
+
+    function setupHeaderAnchors() {
+      const headers = document.querySelectorAll('h1, h2, h3');
+      headers.forEach(h => {
+        // Skip if explicitly opted out via data-no-anchor
+        if (h.hasAttribute('data-no-anchor')) return;
+        const currentId = h.id || slugify(h.textContent);
+        if (!h.id) h.id = currentId;
+        // Avoid duplicating anchors
+        if (h.querySelector('.header-anchor')) return;
+        const a = document.createElement('a');
+        a.className = 'header-anchor';
+        a.href = `#${currentId}`;
+        a.setAttribute('title', 'Copy link to this section');
+        a.setAttribute('aria-label', 'Copy link to this section');
+        a.textContent = '#';
+        a.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          const full = `${location.origin}${location.pathname}#${currentId}`;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(full);
+          }
+          history.replaceState(null, '', `#${currentId}`);
+        }, { passive: false });
+        // Prepend the anchor
+        h.prepend(a);
+      });
+    }
+
+    // Initialize on load
+    updateUrl();
+    setupHeaderAnchors();
+  </script>
+
+  <br />
+  <h2 id="api">
     API
-    </h2>
-    <h3>
+  </h2>
+  <h3>
     Basic format
-    </h3>
-      <pre>http://package-installer.needle.tools/v1/installer/<span style="color:red;">RegistryName</span>/<span style="color:green;">com.mycompany.mypackage</span>?registry=<span style="color:blue;">https://packages.myregistry.com</span></pre>
-    <h3>
+  </h3>
+  <pre>http://package-installer.needle.tools/v1/installer/<span style="color:red;">RegistryName</span>/<span style="color:green;">com.mycompany.mypackage</span>?registry=<span style="color:blue;">https://packages.myregistry.com</span></pre>
+  <h3>
     Minimal example – latest version, automatic scope
   </h3>
   <p>
-    If you omit the version, the latest available will be used on installation. If you omit the scope, the package name and dependencies will be used as scopes automatically.
+    If you omit the version, the latest available will be used on installation. If you omit the scope, the package name
+    and dependencies will be used as scopes automatically.
   </p>
-    <p>
-  <a href="./v1/installer/OpenUPM/com.littlebigfun.addressable-importer@0.9.1?registry=https://package.openupm.com&scope=com.littlebigfun">
-  Download Installer for <b>Addressable Importer</b>
-  </a>
-      <br/>
-  <a href="https://package.openupm.com/com.littlebigfun.addressable-importer/latest">Link to package on registry</a>
+  <p>
+    <a
+      href="./v1/installer/OpenUPM/com.littlebigfun.addressable-importer@0.9.1?registry=https://package.openupm.com&scope=com.littlebigfun">
+      Download Installer for <b>Addressable Importer</b>
+    </a>
+    <br />
+    <a href="https://package.openupm.com/com.littlebigfun.addressable-importer/latest">Link to package on registry</a>
   </p>
-      <pre class="docs">http://package-installer.needle.tools/v1/installer/ <span>api base</span>
+  <pre class="docs">http://package-installer.needle.tools/v1/installer/ <span>api base</span>
   OpenUPM/ <span>registry name</span>
     com.littlebigfun.addressable-importer <span>package name</span>
       ?registry=https://package.openupm.com <span>registry url</span>
       </pre>
-  
-    <h3>
-      Install a single package
-    </h3>
-    <p>
-      Depending on how you set the scope, other packages from your registry will be visible and installable through PackMan.
-    </p>
-    <p>
-      <a href="./v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://packages.needle.tools&scope=com.needle">
+
+  <h3>
+    Install a single package
+  </h3>
+  <p>
+    Depending on how you set the scope, other packages from your registry will be visible and installable through
+    PackMan.
+  </p>
+  <p>
+    <a
+      href="./v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://packages.needle.tools&scope=com.needle">
       Download Installer for <b>Needle Compilation Visualizer</b>
-      </a>
-      <br/>
-      <a href="https://packages.needle.tools/com.needle.compilation-visualizer/latest">Link to package on registry</a>
-    </p>
-      <pre class="docs">http://package-installer.needle.tools/v1/installer/ <span>api base</span>
+    </a>
+    <br />
+    <a href="https://packages.needle.tools/com.needle.compilation-visualizer/latest">Link to package on registry</a>
+  </p>
+  <pre class="docs">http://package-installer.needle.tools/v1/installer/ <span>api base</span>
   Needle/ <span>registry name</span>
     com.needle.compilation-visualizer <span>package name</span>
       @1.0.0 <span>version to install</span>
@@ -194,40 +280,44 @@
           &scope=com.needle <span>scope</span>
       </pre>
 
-  
-    <h3>
-      Install package & dependencies for registries with many scopes (e.g. OpenUPM)
-    </h3>
-    <p>
-      If you don't specify the scope, the first level of dependencies will be automatically included. This helps to support e.g. packages on OpenUPM with dependencies between them. This package for example has a dependency on another OpenUPM package that will be automatically installed alongside.
+
+  <h3>
+    Install package & dependencies for registries with many scopes (e.g. OpenUPM)
+  </h3>
+  <p>
+    If you don't specify the scope, the first level of dependencies will be automatically included. This helps to
+    support e.g. packages on OpenUPM with dependencies between them. This package for example has a dependency on
+    another OpenUPM package that will be automatically installed alongside.
   </p>
   <p>
     <a href="./v1/installer/OpenUPM/elzach.leveleditor?registry=https://package.openupm.com">
       Download Installer for <b>ElZach LevelEditor</b>
     </a>
-    <br/>
+    <br />
     <a href="https://package.openupm.com/elzach.leveleditor/latest">Link to package on registry</a>
   </p>
-      <pre class="docs">http://package-installer.needle.tools/v1/installer/ <span>api base</span>
+  <pre class="docs">http://package-installer.needle.tools/v1/installer/ <span>api base</span>
   OpenUPM/ <span>registry name</span>
     elzach.leveleditor <span>package name</span>
       ?registry=https://package.openupm.com <span>registry url</span>
       </pre>
-    
-    <h3>
-      Install package and use a custom set of scopes
-    </h3>
-    <p>
-      If you specify the scope= parameter, dependencies won't be fetched. To still include multiple scopes, you can use the scope parameter multiple times.
+
+  <h3>
+    Install package and use a custom set of scopes
+  </h3>
+  <p>
+    If you specify the scope= parameter, dependencies won't be fetched. To still include multiple scopes, you can use
+    the scope parameter multiple times.
   </p>
   <p>
-    <a href="./v1/installer/OpenUPM/com.elzach.leveleditor?registry=https://package.openupm.com&scope=com.elzach&scope=com.needle">
+    <a
+      href="./v1/installer/OpenUPM/com.elzach.leveleditor?registry=https://package.openupm.com&scope=com.elzach&scope=com.needle">
       Download Installer for <b>ElZach LevelEditor</b>
     </a>
-    <br/>
+    <br />
     <a href="https://package.openupm.com/com.elzach.leveleditor/latest">Link to package on registry</a>
   </p>
-      <pre class="docs">http://package-installer.needle.tools/v1/installer/ <span>api base</span>
+  <pre class="docs">http://package-installer.needle.tools/v1/installer/ <span>api base</span>
   OpenUPM/ <span>registry name</span>
     com.elzach.leveleditor <span>package name</span>
       ?registry=https://package.openupm.com <span>registry url</span>
@@ -235,56 +325,74 @@
           &scope=com.needle <span>second scope</span>
       </pre>
 
-<h3 id="what-unity-could-do">
-  What Unity could do to make this easier
-</h3>
-<ul>
-  <li>Add support for scoped registries and custom packages in .unitypackage manifest files</li>
-  <li>Add deep linking support for Unity / Hub to install packages</li>
-  <li>Add a proper (public) API to add/remove/update scoped registries</li>
-  <li>Fix issues around updating packages and scoped registries (e.g. need to re-focus Unity, sometimes no updates until Editor restart, ...)</li>
-  <li>Fix compilation issues on package updates (fatal compiler crashes)</li>
-  <li>Backport all these things to LTS versions (2018 + 2019) instead of adding them for Unity 2039.3+ only</li>
-</ul>
-    
-<h3>
-  Unsupported – Contributions welcome!
-</h3>
- <ul>
-   <li>Infer registry name from registry URL (gets rid of yet another parameter). Could also have a hardcoded list for known registries.</li>
-   <li>Open PackMan after installation</li>
-   <li>Do not set up registry if same name already existed with different URL</li>
-   <li>Clean up csproj file when auto-deleting installer</li>
-   <li><strike>Fix issues with long registry paths and yaml multiline weirdness</strike></li>
-   <li>Investigate if there's a way around the occassional compiler error in Unity when rapidly adding/removing files</li>
-   <li>Specify package installation mode (currently: always uses latest available, no matter which version was specified)</li>
-   <li>Install multiple packages</li>
-   <li>Set up multiple registries</li>
-   <li>Only set up registry, don't install packages</li>
-   <li>Make a nice badge / URL thingy</li>
-   <li><strike>Add way more sanity checks</strike></li>
-   <li><strike>Check for package existance</strike></li>
-   <li><strike>Make package version optional (use latest)</strike></li>
-   <li><strike>Add tests</strike></li>
-   <li>Add option to still get installer if package is inaccessible (e.g. needs auth)</li>
-   <li>Add option to include auth tools (Tomlyn for .npm auth setup)</li>
-</ul> 
-    
-<h3>
-  Tests
-</h3>
-<ul>
-  <li>Should fail: <a href="./v1/installer/Needle/com.needle.compilation-visualizer@12.0.0?registry=https://packages.needle.tools&scope=com.needle">Version does not exist</a></li>
-  <li>Should fail: <a href="./v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://nopackages.needle.tools&scope=com.needle">Registry does not exist</a></li>
-  <li>Should fail: <a href="./v1/installer/Needle/com.needle.does-not-exist@1.0.0?registry=https://packages.needle.tools&scope=com.needle">Package does not exist</a></li>
-  <li>Should fail: <a href="./v1/installer/Needle/?registry=https://packages.needle.tools&scope=com.needle">No package specified</a></li>
-  <li>Should work: <a href="./v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://packages.needle.tools">No scope specified</a></li>
-  <li>Should work: <a href="./v1/installer/Needle/com.needle.compilation-visualizer?registry=https://packages.needle.tools">No scope/version specified</a></li>
-  <li>Should work: <a href="./v1/installer/OpenUPM/elzach.leveleditor@0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor&scope=elzach.extensions">Multiple scopes</a></li>
-  <li>Should work: <a href="./v1/installer/OpenUPM/elzach.leveleditor?registry=https://package.openupm.com">No scope specified but has dependendant scopes</a></li>
-</ul>
-    
-<!--
+  <h3 id="what-unity-could-do">
+    What Unity could do to make this easier
+  </h3>
+  <ul>
+    <li>Add support for scoped registries and custom packages in .unitypackage manifest files</li>
+    <li>Add deep linking support for Unity / Hub to install packages</li>
+    <li>Add a proper (public) API to add/remove/update scoped registries</li>
+    <li>Fix issues around updating packages and scoped registries (e.g. need to re-focus Unity, sometimes no updates
+      until Editor restart, ...)</li>
+    <li>Fix compilation issues on package updates (fatal compiler crashes)</li>
+    <li>Backport all these things to LTS versions (2018 + 2019) instead of adding them for Unity 2039.3+ only</li>
+  </ul>
+
+  <h3>
+    Unsupported – Contributions welcome!
+  </h3>
+  <ul>
+    <li>Infer registry name from registry URL (gets rid of yet another parameter). Could also have a hardcoded list for
+      known registries.</li>
+    <li>Open PackMan after installation</li>
+    <li>Do not set up registry if same name already existed with different URL</li>
+    <li>Clean up csproj file when auto-deleting installer</li>
+    <li><strike>Fix issues with long registry paths and yaml multiline weirdness</strike></li>
+    <li>Investigate if there's a way around the occassional compiler error in Unity when rapidly adding/removing files
+    </li>
+    <li><strike>Specify package installation mode (currently: always uses latest available, no matter which version was
+      specified)</strike></ul>li>
+    <li>Install multiple packages</li>
+    <li>Set up multiple registries</li>
+    <li>Only set up registry, don't install packages</li>
+    <li>Make a nice badge / URL thingy</li>
+    <li><strike>Add way more sanity checks</strike></li>
+    <li><strike>Check for package existance</strike></li>
+    <li><strike>Make package version optional (use latest)</strike></li>
+    <li><strike>Add tests</strike></li>
+    <li>Add option to still get installer if package is inaccessible (e.g. needs auth)</li>
+    <li>Add option to include auth tools (Tomlyn for .npm auth setup)</li>
+  </ul>
+
+  <h3>
+    Tests
+  </h3>
+  <ul>
+    <li>Should fail: <a
+        href="./v1/installer/Needle/com.needle.compilation-visualizer@12.0.0?registry=https://packages.needle.tools&scope=com.needle">Version
+        does not exist</a></li>
+    <li>Should fail: <a
+        href="./v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://nopackages.needle.tools&scope=com.needle">Registry
+        does not exist</a></li>
+    <li>Should fail: <a
+        href="./v1/installer/Needle/com.needle.does-not-exist@1.0.0?registry=https://packages.needle.tools&scope=com.needle">Package
+        does not exist</a></li>
+    <li>Should fail: <a href="./v1/installer/Needle/?registry=https://packages.needle.tools&scope=com.needle">No package
+        specified</a></li>
+    <li>Should work: <a
+        href="./v1/installer/Needle/com.needle.compilation-visualizer@1.0.0?registry=https://packages.needle.tools">No
+        scope specified</a></li>
+    <li>Should work: <a
+        href="./v1/installer/Needle/com.needle.compilation-visualizer?registry=https://packages.needle.tools">No
+        scope/version specified</a></li>
+    <li>Should work: <a
+        href="./v1/installer/OpenUPM/elzach.leveleditor@0.0.7?registry=https://package.openupm.com&scope=elzach.leveleditor&scope=elzach.extensions">Multiple
+        scopes</a></li>
+    <li>Should work: <a href="./v1/installer/OpenUPM/elzach.leveleditor?registry=https://package.openupm.com">No scope
+        specified but has dependendant scopes</a></li>
+  </ul>
+
+  <!--
     <h3>
       Experimental
     </h3>
@@ -294,15 +402,16 @@
       <a href="com.unity3d.kharma:selected-sample/Receiver2#someOtherData">test custom data</a>
     </p>
 -->
-    <h3>
-       Made by <a href="https://needle.tools">Needle</a>
-    </h3>
+  <h3>
+    Made by <a href="https://needle.tools">Needle</a>
+  </h3>
 
   <p>
     <b><a href="https://twitter.com/needletools">@needle-tools</a></b>&nbsp;&nbsp;
     <a href="https://twitter.com/hybridherbst">@hybridherbst</a>&nbsp;&nbsp;
     <a href="https://twitter.com/marcel_wiessler">@marcel_wiessler</a>&nbsp;&nbsp;
   </p>
-    
-  </body>
+
+</body>
+
 </html>

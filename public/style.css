@@ -63,6 +63,34 @@ form button:hover {
   background-color: lavender;
 }
 
+/* Make anchor look like button */
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  color: inherit;
+  background-color: var(--secondary-color);
+  border: 2px solid currentColor;
+  border-radius: .25em;
+  cursor: pointer;
+  font-size: inherit;
+  line-height: 1.4em;
+  padding: 0.25em 1em;
+  max-width: 20ch;
+}
+
+.btn:hover {
+  background-color: lavender;
+}
+
+.btn.disabled,
+.btn[aria-disabled="true"] {
+  background-color: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+  border-color: #ccc;
+  pointer-events: none;
+}
+
 footer {
   margin-top: 3em;
   padding-top: 1.5em;
@@ -88,7 +116,7 @@ pre.docs span::before {
   margin: 2em 0;
 }
 
-.package-form-container h3 {
+.package-form-container h2 {
   color: var(--primary-color);
   margin-bottom: 0.5em;
 }
@@ -109,7 +137,7 @@ pre.docs span::before {
 }
 
 .package-form-container .form-group {
-  margin-bottom: 1em;
+  margin-bottom: 0em;
 }
 
 .package-form-container .form-group label {
@@ -139,9 +167,53 @@ pre.docs span::before {
   white-space: nowrap;
 }
 
+.package-form-container .form-group:last-child #downloadNow {
+  white-space: nowrap;
+}
+
+.package-form-container .form-group .actions {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+}
+
 #copyUrl:disabled {
   background-color: #e0e0e0;
   color: #999;
   cursor: not-allowed;
   border-color: #ccc;
+}
+
+/* Header anchor hover thingies */
+h1, h2, h3 {
+  position: relative;
+}
+
+.header-anchor {
+  position: absolute;
+  left: -1.2em;
+  top: 0;
+  bottom: 0;
+  width: 1.2em; /* tall, wide hit area that reaches into header */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity .15s ease-in-out;
+  text-decoration: none;
+  color: #888;
+  font-weight: normal;
+}
+
+h1:hover .header-anchor,
+h2:hover .header-anchor,
+h3:hover .header-anchor,
+.header-anchor:focus,
+.header-anchor:hover {
+  opacity: 1;
+}
+
+/* Scroll margin for anchored headers */
+h1, h2, h3 {
+  scroll-margin-top: 1rem;
 }
