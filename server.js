@@ -350,7 +350,7 @@ app.get("/v1/installer/:registry/:nameAtVersion", /** @returns {Promise<any>} */
 // listen for requests :)
 const port = process.env.PORT || 3017;
 const listener = app.listen(port, () => {
-  console.log("Your app is listening on port " + listener.address().port);
+  console.log("Your app is listening on port http://localhost:" + listener.address().port);
 });
 
 

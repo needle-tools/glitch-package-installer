@@ -41,7 +41,7 @@
       <form id="packageForm">
         <div class="form-group">
           <label for="packageName">Package Name:</label>
-          <input type="text" id="packageName" name="packageName" placeholder="Your package name, e.g. com.needle.shadergraph-markdown" required>
+          <input type="text" id="packageName" name="packageName" placeholder="Package name (e.g. com.needle.shadergraph-markdown) or URL from packages.needle.tools or openupm.com" required>
         </div>
         
         <div class="form-group">
@@ -67,6 +67,36 @@
 
 
     <script>
+      function parsePackageFromUrl(urlString) {
+        try {
+          // Handle Needle Tools URLs: https://packages.needle.tools/-/web/detail/PACKAGE_NAME
+          if (urlString.includes('packages.needle.tools/-/web/detail/')) {
+            const match = urlString.match(/packages\.needle\.tools\/-\/web\/detail\/([^/?]+)/);
+            if (match) {
+              return {
+                packageName: match[1],
+                registry: 'https://packages.needle.tools'
+              };
+            }
+          }
+          
+          // Handle OpenUPM URLs: https://openupm.com/packages/PACKAGE_NAME/
+          if (urlString.includes('openupm.com/packages/')) {
+            const match = urlString.match(/openupm\.com\/packages\/([^/?]+)/);
+            if (match) {
+              return {
+                packageName: match[1],
+                registry: 'https://package.openupm.com'
+              };
+            }
+          }
+          
+          return null;
+        } catch (e) {
+          return null;
+        }
+      }
+
       function updateUrl() {
         const packageName = document.getElementById('packageName').value;
         const registry = document.getElementById('registry').value;
@@ -91,7 +121,18 @@
         }
       }
       
-      document.getElementById('packageName').addEventListener('input', updateUrl);
+      document.getElementById('packageName').addEventListener('input', function() {
+        const input = this.value.trim();
+        const parsedData = parsePackageFromUrl(input);
+        
+        if (parsedData) {
+          // If it's a URL that we can parse, extract the package name and set registry
+          this.value = parsedData.packageName;
+          document.getElementById('registry').value = parsedData.registry;
+        }
+        
+        updateUrl();
+      });
       document.getElementById('registry').addEventListener('input', updateUrl);
       document.getElementById('version').addEventListener('input', updateUrl);
       
