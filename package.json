@@ -1,13 +1,11 @@
 {
-  "//1": "describes your app and its dependencies",
-  "//2": "https://docs.npmjs.com/files/package.json",
-  "//3": "updating this file will download and update your packages",
   "name": "unity-package-installer",
   "version": "0.2.0",
   "description": "Creates .unitypackage installers that set up scoped registries and install packages.",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "npm run dev",
+    "dev": "node server.js"
   },
   "dependencies": {
     "express": "^4.17.1",
@@ -21,7 +19,7 @@
     "cors": "^2.8.5"
   },
   "repository": {
-    "url": "https://glitch.com/edit/#!/package-installer"
+    "url": "https://github.com/needle-tools/glitch-package-installer"
   },
   "license": "MIT",
   "keywords": [
