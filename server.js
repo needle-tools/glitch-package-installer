@@ -5,6 +5,7 @@
 // but feel free to use whatever libraries or frameworks you'd like through `package.json`.
 const express = require("express");
 const fs = require('fs-extra');
+const path = require('path');
 const yaml = require('js-yaml');
 const targz = require('targz');
 const semver = require('semver');
@@ -274,16 +275,14 @@ app.get("/v1/installer/:registry/:nameAtVersion", /** @returns {Promise<any>} */
   // so that it lives directly next to the files here.
   // this is a renamed .unitypackage file (which is just a .tar.gz)
   // CAREFUL - selecting the file in the glitch UI will weirdly convert it to some text format?! DO NOT TOUCH this file through the Glitch UI
-  let file = __dirname + "/DO-NOT-TOUCH/" + "archtemp.tar.gz";
+  const file = __dirname + "/DO-NOT-TOUCH/" + "archtemp.tar.gz";
   
   // generate temporary paths to unpack/pack the archive file
-  let salt = nanoid.nanoid() + "_" + Date.now();
-  let tmpPath = '/tmp/my_package_folder_' + salt;
-  let tmpFile = '/tmp/my_package_file_' + salt + '.tar.gz';
-  
+  const salt = nanoid.nanoid() + "_" + Date.now();
+  const tmpPath = path.resolve(process.cwd(), './.tmp/my_package_folder_' + salt);
+  const tmpFile = tmpPath + '.tar.gz';
   fs.ensureDir(tmpPath);
-    
-  let targetPath = await decompressPromise(file, tmpPath);
+  const targetPath = await decompressPromise(file, tmpPath);
   
   /// MODIFY PACKAGE CONTENT
   
@@ -291,19 +290,19 @@ app.get("/v1/installer/:registry/:nameAtVersion", /** @returns {Promise<any>} */
   modifyPackagePath(tmpPath, packageName);
   
   // Modify PackageData.asset:
-  let dataGuid = "54e893365203989479ba056e0bf3174a";
-  let assetFile = tmpPath + "/" + dataGuid + "/" + "asset";
-  var data = fs.readFileSync(assetFile, 'utf8');
+  const dataGuid = "54e893365203989479ba056e0bf3174a";
+  const assetFile = tmpPath + "/" + dataGuid + "/" + "asset";
+  const data = fs.readFileSync(assetFile, 'utf8');
   
   // we need to split the original file into parts
   // since Unity's YAML format is not spec conform.
   // we split off the header, and treat the rest as valid yaml.
   // Note: There's probably a way to configure the yaml parser to accept the Unity headers
   const splitLines = str => str.split(/\r?\n/);
-  let split_lines = splitLines(data);
+  const split_lines = splitLines(data);
   
-  let some_lines = split_lines.slice(3);  
-  let startWithBrokenYamlTag = split_lines.slice(0, 3).join("\n");
+  const some_lines = split_lines.slice(3);  
+  const startWithBrokenYamlTag = split_lines.slice(0, 3).join("\n");
   
   const yamlData = yaml.load(some_lines.join("\n"));
 
@@ -320,14 +319,14 @@ app.get("/v1/installer/:registry/:nameAtVersion", /** @returns {Promise<any>} */
   }];
   
   // lineWidth param is necessary, otherwise long registry names break in weird >- yaml multiline, which Unity does not (properly?) support.
-  let combinedFile = startWithBrokenYamlTag + "\n" + yaml.dump(yamlData, { lineWidth: 500 });
+  const combinedFile = startWithBrokenYamlTag + "\n" + yaml.dump(yamlData, { lineWidth: 500 });
   
   fs.writeFileSync(assetFile, combinedFile, 'utf8')
   
   /// END MODIFY PACKAGE CONTENT  
   
   // pack into a .tar.gz again
-  let compressPath = await compressPromise(tmpPath, tmpFile);  
+  const compressPath = await compressPromise(tmpPath, tmpFile);  
   
   stats.register({name:packageName, version:packageVersion, request:request})
   
