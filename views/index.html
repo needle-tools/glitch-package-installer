@@ -125,7 +125,7 @@
         const registryName = url.hostname.replace(/^(package\.|packages\.)/, '').replace(/\.com$/, '');
         const capitalizedRegistry = registryName.charAt(0).toUpperCase() + registryName.slice(1);
 
-        let finalUrl = `http://package-installer.needle.tools/v1/installer/${capitalizedRegistry}/${packageName}`;
+        let finalUrl = `https://package-installer.needle.tools/v1/installer/${capitalizedRegistry}/${packageName}`;
         if (version) {
           finalUrl += `@${version}`;
         }
